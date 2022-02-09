@@ -1,0 +1,8 @@
+Language: Cpp
+BasedOnStyle: Microsoft
+TabWidth: 8
+UseTab: Never
+DerivePointerAlignment: false
+PointerAlignment: Left
+# BreakBeforeBraces: Attach
+BreakBeforeBraces: Linux

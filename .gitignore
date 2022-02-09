@@ -1,0 +1,13 @@
+/**/build
+/**/Thumbs.db
+# visual studio code
+.vscode
+
+# mac
+.DS_Store
+
+# variable environnement
+.env
+
+#fichier .o
+.o
