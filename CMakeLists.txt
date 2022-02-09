@@ -1,71 +1,69 @@
-# Light Up Project
-# Copyright University of Bordeaux. All rights reserved, 2021.
+cmake_minimum_required(VERSION 2.6)
+project(lightup C)
 
-cmake_minimum_required(VERSION 3.0)
-
-project("Lightup" C)
-
-# test
 include(CTest)
 enable_testing()
 
-set(CMAKE_C_FLAGS "-std=c99 -Wall -pthread -Wextra -Wunused-parameter")
-set(CMAKE_C_FLAGS_DEBUG "-g --coverage")    # use CMake option: -DCMAKE_BUILD_TYPE=DEBUG
-set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG")   # use CMake option: -DCMAKE_BUILD_TYPE=RELEASE
+set(CMAKE_C_FLAGS "-std=c99 -g -Wall --coverage")
 
-############################# SRC #############################
-
-# game library
-add_library(game game.c game_ext.c game_aux.c game_private.c queue.c)
-
-# game text
+#Executable tests:
 add_executable(game_text game_text.c)
-target_link_libraries(game_text game)
 
-# game tests
-add_executable(game_test game_test.c game_test_aux.c game_test_v1.c game_test_v2.c game_examples.c)
-target_link_libraries(game_test game)
+add_executable(game_test_maaudrain game_test_maaudrain.c)
+add_executable(game_test_abdouldiallo game_test_abdouldiallo.c)
+add_executable(game_test_arledoux game_test_arledoux.c)
 
-############################# TEST V1 #############################
+#Libraries:
+add_library(game game.c game_aux.c queue.c)
 
-# Aux Tests(game_aux.h)
-add_test(testv1_default ./game_test "default")
-add_test(testv1_default_solution ./game_test "default_solution")
-add_test(testv1_print ./game_test "print")
+target_link_libraries(game_text game ) 
+target_link_libraries(game_test_abdouldiallo game ) 
+target_link_libraries(game_test_maaudrain game ) 
+target_link_libraries(game_test_arledoux game )
 
-# Basic Tests (game.h)
-add_test(testv1_new ./game_test "new")
-add_test(testv1_new_empty ./game_test "new_empty")
-add_test(testv1_copy ./game_test "copy")
-add_test(testv1_equal ./game_test "equal")
-add_test(testv1_delete ./game_test "delete")
-add_test(testv1_get_square ./game_test "get_square")
-add_test(testv1_set_square ./game_test "set_square")
-add_test(testv1_get_state ./game_test "get_state")
-add_test(testv1_get_flags ./game_test "get_flags")
-add_test(testv1_is_state ./game_test "is_state")
-add_test(testv1_has_flag ./game_test "has_flag")
-add_test(testv1_play_move ./game_test "play_move")
-add_test(testv1_check_move ./game_test "check_move")
-add_test(testv1_restart ./game_test "restart")
-add_test(testv1_update_flags ./game_test "update_flags")
-add_test(testv1_is_over ./game_test "is_over")
 
-############################# TEST V2 #############################
+#Tests dummy
+add_test(test_maaudrain_dummy ./game_test_maaudrain dummy)
+add_test(test_abdouldiallo_dummy ./game_test_abdouldiallo dummy)
+add_test(test_arledoux_dummy ./game_test_arledoux dummy)
 
-# Ext Tests (game_ext.h)
-add_test(testv2_new_ext ./game_test "new_ext")
-add_test(testv2_new_empty_ext ./game_test "new_empty_ext")
-add_test(testv2_game_1d ./game_test "game_1d")
-add_test(testv2_equal_ext ./game_test "equal_ext")
-add_test(testv2_copy_ext ./game_test "copy_ext")
-add_test(testv2_game_wrapping_2x2 ./game_test "game_wrapping_2x2")
-add_test(testv2_game_wrapping_3x3 ./game_test "game_wrapping_3x3")
-add_test(testv2_game_wrapping_5x3 ./game_test "game_wrapping_5x3")
-add_test(testv2_game_wrapping_error ./game_test "game_wrapping_error")
-add_test(testv2_undo_one ./game_test "undo_one")
-add_test(testv2_undo_redo_some ./game_test "undo_redo_some")
-add_test(testv2_undo_redo_all ./game_test "undo_redo_all")
-add_test(testv2_restart_undo ./game_test "restart_undo")
 
-# EOF
+#Tests Maxime:
+add_test(test_maaudrain_game_new ./game_test_maaudrain game_new)
+add_test(test_maaudrain_game_new_ext ./game_test_maaudrain game_new_ext)
+add_test(test_maaudrain_game_new_empty ./game_test_maaudrain game_new_empty)
+add_test(test_maaudrain_game_new_empty_ext ./game_test_maaudrain game_new_empty_ext)
+add_test(test_maaudrain_game_copy ./game_test_maaudrain game_copy)
+add_test(test_maaudrain_game_equal ./game_test_maaudrain game_equal)
+add_test(test_maaudrain_game_delete ./game_test_maaudrain game_delete)
+add_test(test_maaudrain_game_set_square ./game_test_maaudrain game_set_square)
+add_test(test_maaudrain_game_get_square ./game_test_maaudrain game_get_square)
+add_test(test_maaudrain_game_print ./game_test_maaudrain game_print)
+
+
+#Tests Abdoulaye:
+add_test(test_abdouldiallo_game_sol ./game_test_abdouldiallo test_game_solution)
+add_test(test_abdouldiallo_game_state ./game_test_abdouldiallo test_get_state)
+add_test(test_abdouldiallo_game_flags ./game_test_abdouldiallo test_get_flags)
+add_test(test_abdouldiallo_game_is_blank ./game_test_abdouldiallo test_is_blank)
+add_test(test_abdouldiallo_game_is_lightbulb ./game_test_abdouldiallo test_is_lightbulb)
+add_test(test_abdouldiallo_game_is_black ./game_test_abdouldiallo test_is_black)
+add_test(test_abdouldiallo_game_black_number ./game_test_abdouldiallo test_get_black_number)
+add_test(test_abdouldiallo_game_is_marked ./game_test_abdouldiallo test_is_marked)
+add_test(test_abdouldiallo_game_undo ./game_test_abdouldiallo test_undo)
+add_test(test_abdouldiallo_game_redo ./game_test_abdouldiallo test_redo)
+
+
+
+#Tests Arthur:
+add_test(test_arledoux_game_is_lighted ./game_test_arledoux game_is_lighted)
+add_test(test_arledoux_game_has_error ./game_test_arledoux game_has_error)
+add_test(test_arledoux_game_check_move ./game_test_arledoux game_check_move)
+add_test(test_arledoux_game_play_move ./game_test_arledoux game_play_move)
+add_test(test_arledoux_game_update_flags ./game_test_arledoux game_update_flags)
+add_test(test_arledoux_game_is_over ./game_test_arledoux game_is_over)
+add_test(test_arledoux_game_restart ./game_test_arledoux game_restart)
+add_test(test_arledoux_game_default ./game_test_arledoux game_default)
+add_test(test_arledoux_game_nb_rows ./game_test_arledoux game_nb_rows)
+add_test(test_arledoux_game_nb_cols ./game_test_arledoux game_nb_cols)
+add_test(test_arledoux_game_is_wrapping ./game_test_arledoux game_is_wrapping)

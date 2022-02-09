@@ -19,7 +19,6 @@
 
 /**
  * @brief Creates a new game with extended options and initializes it.
- * @details See description of game extensions on @ref index.
  * @param nb_rows number of rows in game
  * @param nb_cols number of columns in game
  * @param squares an array describing the initial state of each square
@@ -31,8 +30,8 @@ game game_new_ext(uint nb_rows, uint nb_cols, square* squares, bool wrapping);
 
 /**
  * @brief Creates a new empty game with extended options.
- * @details All squares are initialized with empty squares.
- * @details See description of game extensions on @ref index.
+ * @details All squares are initialized with empty squares, and the expected
+ * numbers of tents for each row/column are set to zero.
  * @param nb_rows number of rows in game
  * @param nb_cols number of columns in game
  * @param wrapping wrapping option

@@ -1,126 +1,134 @@
-/**
- * @file game_text.c
- * @brief Game Interface in Text Mode.
- * @copyright University of Bordeaux. All rights reserved, 2021.
- **/
-
-#include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
 
-/* ************************************************************************** */
-
-static void game_print_errors(game g)
+int main()
 {
-  for (uint i = 0; i < game_nb_rows(g); i++) {
-    for (uint j = 0; j < game_nb_cols(g); j++) {
-      if (game_has_error(g, i, j)) {
-        if (game_is_lightbulb(g, i, j)) printf("Error at light bulb (%d,%d)\n", i, j);
-        if (game_is_black(g, i, j)) printf("Error at black wall (%d,%d)\n", i, j);
-      }
+    game current_game = game_default();
+    while (!game_is_over(current_game))
+    {
+        game_print(current_game);
+        uint i, j;
+        for (i = 0; i < game_nb_rows(current_game); i++)
+        {
+            for (j = 0; j < game_nb_cols(current_game); j++)
+            {
+                if (game_has_error(current_game, i, j))
+                {
+                    square s_tmp = game_get_state(current_game, i, j);  // Vérification et affichage des erreurs case par case
+                    if (s_tmp == S_LIGHTBULB)
+                    {
+                        printf("Error at lightbulb (%u,%u)\n", i, j);
+                    }
+                    else
+                    {
+                        printf("Error at wall (%u,%u)\n", i, j);
+                    }
+                }
+            }
+        }
+        printf("Enter your command: [h for help]\n");
+        char cmd;
+        int ret = scanf(" %c", &cmd);  // Scan de la commande
+        if (ret == EOF)
+        {
+            printf("End of File!\n");
+            return EXIT_SUCCESS;
+        }
+        else if (cmd == 'h')
+        {
+            printf("Commands : \n");
+            printf("  - Type 'l <i> <j>' to place a lightbulb at coordinates (i,j).\n");
+            printf("  - Type 'm <i> <j>' to place a mark at coordinates (i,j).\n");
+            printf("  - Type 'b <i> <j>' to empty the square at coordinates (i,j).\n");
+            printf("  - Type 'z' to undo the last move.\n");
+            printf("  - Type 'y' to redo the last move.\n");
+            printf("  - Type 'r' to restart.\n");
+            printf("  - Type 'q' to quit.\n");
+        }
+        else if (cmd == 'r')
+        {  // Restart
+            printf(">Game restarted");
+            game_restart(current_game);
+        }
+        else if (cmd == 'q')
+        {
+            current_game = game_default_solution();
+            game_print(current_game);  // Abandon + affichage de la solution
+            printf("shame\n");
+            game_delete(current_game);
+            return EXIT_SUCCESS;
+        }
+        else if (cmd == 'z')
+        {
+            printf("Last move undone.\n");
+            game_undo(current_game);
+        }
+        else if (cmd == 'y')
+        {
+            printf("Last move redone.\n");
+            game_redo(current_game);
+        }
+        else if (cmd == 'l' || cmd == 'm' || cmd == 'b')
+        {
+            ret = scanf("%u %u", &i, &j);  // Si la commande est un placement, alors récupération des coordonnées
+            if (ret == EOF)
+            {
+                printf("End of File!\n");
+                return EXIT_SUCCESS;
+            }
+            else if (ret < 1)
+            {
+                printf("Invalid command\nType h for help\n");
+            }
+            else
+            {
+                if (i >= DEFAULT_SIZE || j >= DEFAULT_SIZE)
+                {  // Vérification des coordonnées
+                    printf(
+                        "Coordinates are out of the grid. Please enter a value "
+                        "between 0 and 6.\n");
+                }
+                else
+                {
+                    if (game_check_move(current_game, i, j, game_get_state(current_game, i, j)))
+                    {
+                        if (cmd == 'l')
+                        {
+                            game_play_move(current_game, i, j, S_LIGHTBULB);
+                            printf("Lightbulb placed at square (%u,%u)\n", i, j);
+                        }
+                        if (cmd == 'm')
+                        {  // Actualisation de la case concernée en fonction de
+                           // la commande
+                            game_play_move(current_game, i, j, S_MARK);
+                            printf("Marked placed at square (%u,%u)\n", i, j);
+                        }
+                        if (cmd == 'b')
+                        {
+                            game_play_move(current_game, i, j, S_BLANK);
+                            printf("Blank placed at square (%u,%u)\n", i, j);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            printf("Invalid command.\nType h for help.\n");
+        }
+        printf("\n");
+        char clear;  // Efface le buffer afin d'ignorer toute accumulation de caractères à l'intérieur menant à une suite de commandes invoulues à cause du scanf.
+        while ((clear = getchar()) != '\n' && clear != EOF)
+        {
+        }
     }
-  }
-}
-
-/* ************************************************************************** */
-
-static bool game_step(game g)
-{
-  printf("> ? [h for help]\n");
-  // <action> [<row> <col>]
-  char c = '?';
-  int r = scanf(" %c", &c);  // don't forget the space ' ' before %c
-  if (r == EOF || r < 0) {
-    return false;
-  }
-  if (r != 1) {
-    printf("Error: invalid user input!\n");
-    return true;  // but continue to play
-  }
-
-  if (c == 'h') {  // help
-    printf("> action: help\n");
-    printf("- press 'l <i> <j>' to put a light bulb at square (i,j)\n");
-    printf("- press 'm <i> <j>' to put a mark at square (i,j)\n");
-    printf("- press 'b <i> <j>' to blank square (i,j)\n");
-    printf("- press 'r' to restart\n");
-    printf("- press 'z' to undo\n");
-    printf("- press 'y' to redo\n");
-    printf("- press 'q' to quit\n");
-    // printf("- press 's' to solve the default game\n");
-  } else if (c == 'z') {  // undo
-    printf("> action: undo\n");
-    game_undo(g);
-    return true;
-  } else if (c == 'y') {  // redo
-    printf("> action: redo\n");
-    game_redo(g);
-    return true;
-  } else if (c == 'r') {  // restart
-    printf("> action: restart\n");
-    game_restart(g);
-    return true;
-  } else if (c == 'q') {  // quit
-    printf("> action: quit\n");
-    return false;                                 // exit
-  } else if (c == 'l' || c == 'm' || c == 'b') {  // play move
-    uint i, j;
-    int ret = scanf(" %u %u", &i, &j);
-    if (ret != 2) {
-      printf("Error: invalid user input!\n");
-      return true;
-    }
-    printf("> action: play move '%c' into square (%d,%d)\n", c, i, j);
-    square s;
-    if (c == 'l') s = S_LIGHTBULB;
-    if (c == 'b') s = S_BLANK;
-    if (c == 'm') s = S_MARK;
-    bool check = game_check_move(g, i, j, s);
-    if (!check) {
-      printf("Error: illegal move on square (%d,%d)!\n", i, j);
-      return true;
-    }
-    game_play_move(g, i, j, s);
-    return true;  // continue to play
-  } else {
-    printf("Error: invalid user input!\n");
-    return true;
-  }
-
-  return true;  // continue...
-}
-
-/* ************************************************************************** */
-
-int main(void)
-{
-  game g = NULL;
-  // if (argc == 2)
-  //   g = game_load(argv[1]);
-  // else
-  g = game_default();
-  assert(g);
-
-  game_print(g);
-  bool win = game_is_over(g);
-  bool cont = true;
-  while (!win && cont) {
-    cont = game_step(g);
-    win = game_is_over(g);
-    if (cont) game_print(g);
-    game_print_errors(g);
-  }
-  if (win)
-    printf("Congratulation, you win :-)\n");
-  else
-    printf("What a shame, you gave up :-(\n");
-  game_delete(g);
-
-  return EXIT_SUCCESS;
+    game_print(current_game);
+    game_delete(current_game);
+    printf("congratulation\n");
+    return EXIT_SUCCESS;
 }
