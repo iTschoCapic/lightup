@@ -5,10 +5,17 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
+#include "game_tools.h"
 
-int main()
+int main(int argc, char* argv[])
 {
-    game current_game = game_default();
+    game current_game;
+    if(argc == 2){
+        current_game = game_load(argv[1]);
+    }
+    else{
+        current_game = game_default();
+    }
     while (!game_is_over(current_game))
     {
         game_print(current_game);
