@@ -10,10 +10,12 @@
 int main(int argc, char* argv[])
 {
     game current_game;
-    if(argc == 2){
+    if (argc == 2)
+    {
         current_game = game_load(argv[1]);
     }
-    else{
+    else
+    {
         current_game = game_default();
     }
     while (!game_is_over(current_game))
@@ -54,6 +56,7 @@ int main(int argc, char* argv[])
             printf("  - Type 'b <i> <j>' to empty the square at coordinates (i,j).\n");
             printf("  - Type 'z' to undo the last move.\n");
             printf("  - Type 'y' to redo the last move.\n");
+            printf("  - Type 's <name>' to save your game in file <name>.\n");
             printf("  - Type 'r' to restart.\n");
             printf("  - Type 'q' to quit.\n");
         }
@@ -79,6 +82,23 @@ int main(int argc, char* argv[])
         {
             printf("Last move redone.\n");
             game_redo(current_game);
+        }
+        else if (cmd == 's')
+        {
+            char name;
+            ret = scanf("%s", &name);  
+            if (ret == EOF)
+            {
+                printf("End of File!\n");
+                return EXIT_SUCCESS;
+            }
+            else if (ret < 1)
+            {
+                printf("Argument missing!\nType h for help\n");
+            }
+            game_save(current_game, &name);
+            printf("Game saved in file '%s'\n", &name);
+    
         }
         else if (cmd == 'l' || cmd == 'm' || cmd == 'b')
         {
