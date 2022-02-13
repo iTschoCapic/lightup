@@ -12,14 +12,16 @@
 
 game game_load(char *filename){
     //check_if_error(filename == NULL, "Address invalid !");
-    FILE *fichier = fopen("filename" , "r");
+    FILE *fichier = fopen( filename , "r");
     game jeu;
-    int height , width , wrapping;
-    int ret = fscanf(fichier , "%d %d %d" , &height , &width , &wrapping);
-    jeu = game_new_empty_ext(height , width, wrapping);
-    char chaine[6] = "";
-    height = 0;
-    while( fgets(chaine , 6 , fichier) != NULL ){
+    int tab[3];
+    fscanf(fichier , "%d %d %d" , &tab[0] , &tab[1] , &tab[2]);
+    jeu = game_new_empty_ext(tab[0] , tab[1], tab[2]);
+    char chaine[7];
+    int height = 0;
+    fseek(fichier , 1 , SEEK_CUR);
+    while( ftell(fichier) != EOF ){
+        fscanf(fichier , "%c%c%c%c%c%c%c" , &chaine[0] , &chaine[1], &chaine[2] ,&chaine[3] ,&chaine[4] ,&chaine[5] ,&chaine[6]);
         for(int i = 0 ; i < 7 ; i++){
             if(chaine[i] == '*'){
                 game_set_square(jeu , height , i , S_LIGHTBULB);
@@ -46,8 +48,16 @@ game game_load(char *filename){
                 game_set_square(jeu , height , i , S_BLANK);
             }
         }
+        game_print(jeu);
+        fseek(fichier , 1 , SEEK_CUR);
         height++;
+        if(height == 7){
+            fseek(fichier , 2 , SEEK_CUR);
+            int b = EOF;
+            int c = ftell(fichier);
+        }
     }
+    fclose(fichier);
     game_update_flags(jeu);
     return jeu;
 }

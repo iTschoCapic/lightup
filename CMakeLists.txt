@@ -40,6 +40,7 @@ add_test(test_maaudrain_game_delete ./game_test_maaudrain game_delete)
 add_test(test_maaudrain_game_set_square ./game_test_maaudrain game_set_square)
 add_test(test_maaudrain_game_get_square ./game_test_maaudrain game_get_square)
 add_test(test_maaudrain_game_print ./game_test_maaudrain game_print)
+add_test(test_maaudrain_game_load ./game_test_maaudrain game_load)
 
 
 #Tests Abdoulaye:

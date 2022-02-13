@@ -11,9 +11,8 @@
 
 bool test_game_load(void){
     game jeu_default = game_default();
-    char *tab = "7 7 0\nbb1bbbb\nbb2bbbb\nbbbbbw2\nbbbbbbb\n1wbbbbb\nbbbb2bb\nbbbbwbb\n" ;
     game jeu ;
-    jeu = game_load(tab);
+    jeu = game_load("default.txt");
     game_delete(jeu);
     if(!game_equal(jeu_default , jeu)){
         return false;

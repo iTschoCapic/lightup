@@ -7,6 +7,7 @@
 #include "game_aux.h"
 #include "game_ext.h"
 #include "queue.h"
+#include "game_tools.h"
 
 #define ASSERT(expr)                                                                        \
     do                                                                                      \
@@ -194,6 +195,17 @@ bool test_game_new_empty_ext(uint height, uint width, bool wrapping)
     return true;
 }
 
+bool test_game_load(void){
+    game jeu_default = game_default();
+    game jeu ;
+    jeu = game_load("default.txt");
+    game_delete(jeu);
+    if(!game_equal(jeu_default , jeu)){
+        return false;
+    }
+    return true;
+}
+
 /* ********** MAIN ROUTINE ********** */
 
 int main(int argc, char* argv[])
@@ -206,6 +218,8 @@ int main(int argc, char* argv[])
     // start test
     fprintf(stderr, "=> Start test \"%s\"\n", argv[1]);
     bool ok = false;
+    if (strcmp("game_load", argv[1]) == 0)
+        ok = test_game_load();
     if (strcmp("dummy", argv[1]) == 0)
         ok = test_dummy();
     else if (strcmp("game_new", argv[1]) == 0)
