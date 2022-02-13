@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0)
 project(lightup C)
 
 include(CTest)
@@ -10,6 +10,7 @@ set(CMAKE_C_FLAGS "-std=c99 -g -Wall --coverage")
 add_executable(game_text game_text.c)
 
 add_executable(game_test_maaudrain game_test_maaudrain.c)
+add_executable(game_test_lorichard game_test_lorichard.c)
 add_executable(game_test_abdouldiallo game_test_abdouldiallo.c)
 add_executable(game_test_arledoux game_test_arledoux.c)
 
@@ -20,7 +21,7 @@ target_link_libraries(game_text game )
 target_link_libraries(game_test_abdouldiallo game ) 
 target_link_libraries(game_test_maaudrain game ) 
 target_link_libraries(game_test_arledoux game )
-
+target_link_libraries(game_test_lorichard game )
 
 #Tests dummy
 add_test(test_maaudrain_dummy ./game_test_maaudrain dummy)
@@ -67,3 +68,6 @@ add_test(test_arledoux_game_default ./game_test_arledoux game_default)
 add_test(test_arledoux_game_nb_rows ./game_test_arledoux game_nb_rows)
 add_test(test_arledoux_game_nb_cols ./game_test_arledoux game_nb_cols)
 add_test(test_arledoux_game_is_wrapping ./game_test_arledoux game_is_wrapping)
+
+#Tests Loïc ;
+add_test(test_lorichard_game_load ./game_test_lorichard game_load)

@@ -11,62 +11,44 @@
 #include "game_tools.h"
 
 game game_load(char *filename){
-    check_if_error(filename == NULL, "Address invalid !");
+    //check_if_error(filename == NULL, "Address invalid !");
     FILE *fichier = fopen("filename" , "r");
     game jeu;
-    int size = 3;
-    int tab[size];
-    int cmp =0;
-    int c ;
-    while( cmp != size-1){
-        c = fgetc(fichier);
-        if(c == EOF){
-            check_if_error(true, "Address invalid !");
-        }
-        if(c != ' '){
-            if(c > 0 || c <=10){
-                tab[cmp] = c;
-                cmp++;
+    int height , width , wrapping;
+    int ret = fscanf(fichier , "%d %d %d" , &height , &width , &wrapping);
+    jeu = game_new_empty_ext(height , width, wrapping);
+    char chaine[6] = "";
+    height = 0;
+    while( fgets(chaine , 6 , fichier) != NULL ){
+        for(int i = 0 ; i < 7 ; i++){
+            if(chaine[i] == '*'){
+                game_set_square(jeu , height , i , S_LIGHTBULB);
+            }
+            if(chaine[i] == '0'){
+                game_set_square(jeu , height , i , S_BLACK0);
+            }
+            if(chaine[i] == '1'){
+                game_set_square(jeu , height , i , S_BLACK1);
+            }
+            if(chaine[i] == '2'){
+                game_set_square(jeu , height , i , S_BLACK2);
+            }
+            if(chaine[i] == '3'){
+                game_set_square(jeu , height , i , S_BLACK3);
+            }
+            if(chaine[i] == '4'){
+                game_set_square(jeu , height , i , S_BLACK4);
+            }
+            if(chaine[i] == 'w'){
+                game_set_square(jeu , height , i , S_BLACKU);
+            }
+            if(chaine[i] == 'b'){
+                game_set_square(jeu , height , i , S_BLANK);
             }
         }
+        height++;
     }
-    jeu = game_new_empty_ext(tab[0] , tab[1], tab[2]);
-    int height = 0 ;
-    int width = 0 ;
-    while( (c = fgetc(fichier)) != EOF){
-        if(c == '*'){
-            game_play_move(jeu , height , width , S_LIGHTBULB);
-            width++;
-        }
-        if(c == '0'){
-            game_play_move(jeu , height , width , S_BLACK0);
-            width++;
-        }
-        if(c == '1'){
-            game_play_move(jeu , height , width , S_BLACK1);
-            width++;
-        }
-        if(c == '2'){
-            game_play_move(jeu , height , width , S_BLACK2);
-            width++;
-        }
-        if(c == '3'){
-            game_play_move(jeu , height , width , S_BLACK3);
-            width++;
-        }
-        if(c == '4'){
-            game_play_move(jeu , height , width , S_BLACK4);
-            width++;
-        }
-        if(c == 'w'){
-            game_play_move(jeu , height , width , S_BLACKU);
-            width++;
-        }
-        if(c == 'b'){
-            
-        }
-
-    }
+    game_update_flags(jeu);
     return jeu;
 }
 
