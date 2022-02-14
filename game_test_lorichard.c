@@ -12,12 +12,11 @@
 bool test_game_load(void){
     game jeu_default = game_default();
     game jeu ;
-    jeu = game_load("default.txt");
+    jeu = game_load("../default.txt");
+    bool resultat = game_equal(jeu_default , jeu);
     game_delete(jeu);
-    if(!game_equal(jeu_default , jeu)){
-        return false;
-    }
-    return true;
+    game_delete(jeu_default);
+    return resultat;
 }
 
 int main(int argc, char* argv[])
