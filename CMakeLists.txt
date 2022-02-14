@@ -13,6 +13,7 @@ add_executable(game_test_maaudrain game_test_maaudrain.c)
 add_executable(game_test_lorichard game_test_lorichard.c)
 add_executable(game_test_abdouldiallo game_test_abdouldiallo.c)
 add_executable(game_test_arledoux game_test_arledoux.c)
+add_executable(game_test_rmachecourtb game_test_rmachecourtb.c)
 
 #Libraries:
 add_library(game game.c game_aux.c game_tools.c queue.c)
@@ -22,6 +23,7 @@ target_link_libraries(game_test_abdouldiallo game )
 target_link_libraries(game_test_maaudrain game ) 
 target_link_libraries(game_test_arledoux game )
 target_link_libraries(game_test_lorichard game )
+target_link_libraries(game_test_rmachecourtb game)
 
 #Tests dummy
 add_test(test_maaudrain_dummy ./game_test_maaudrain dummy)
@@ -71,3 +73,7 @@ add_test(test_arledoux_game_is_wrapping ./game_test_arledoux game_is_wrapping)
 
 #Tests Loïc ;
 add_test(test_lorichard_game_load ./game_test_lorichard game_load)
+
+#Tests Renaud:
+#add_test(test_rmachecourtb_game_load ./game_test_rmachecourtb game_load)
+add_test(test_rmachecourtb_game_save ./game_test_rmachecourtb game_save)
