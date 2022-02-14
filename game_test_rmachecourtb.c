@@ -19,13 +19,17 @@
         }                                                                                   \
     } while (0)
 
-/*bool test_game_load(char *filename)
+bool test_game_load(char *filename)
 {
     game g = game_load(filename);
     ASSERT(g);
+    game g2 = game_default();
+    ASSERT(g2);
+    ASSERT(game_equal(g, g2));
     game_delete(g);
+    game_delete(g2);
     return true;
-}*/
+}
 
 bool test_game_save(char *filename)
 {
@@ -51,9 +55,9 @@ int main(int argc, char* argv[])
     // start test
     fprintf(stderr, "=> Start test \"%s\"\n", argv[1]);
     bool ok = false;
-    /*if (strcmp("game_load", argv[1]) == 0)
+    if (strcmp("game_load", argv[1]) == 0)
         ok = test_game_load(argv[1]);
-    else*/ if (strcmp("game_save", argv[1]) == 0)
+    else if (strcmp("game_save", argv[1]) == 0)
         ok = test_game_save(argv[1]);
     else
     {
