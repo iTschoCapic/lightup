@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
             printf("  - Type 'b <i> <j>' to empty the square at coordinates (i,j).\n");
             printf("  - Type 'z' to undo the last move.\n");
             printf("  - Type 'y' to redo the last move.\n");
-            printf("  - Type 's <name>' to save your game in file <name>.\n");
+            printf("  - Type 'w <filename>' to save your game in file 'filename'.\n\t(Create it if necessary)\n");
             printf("  - Type 'r' to restart.\n");
             printf("  - Type 'q' to quit.\n");
         }
@@ -83,10 +83,10 @@ int main(int argc, char* argv[])
             printf("Last move redone.\n");
             game_redo(current_game);
         }
-        else if (cmd == 's')
+        else if (cmd == 'w')
         {
             char name;
-            ret = scanf("%s", &name);  
+            ret = scanf("%s", &name);
             if (ret == EOF)
             {
                 printf("End of File!\n");
@@ -98,7 +98,6 @@ int main(int argc, char* argv[])
             }
             game_save(current_game, &name);
             printf("Game saved in file '%s'\n", &name);
-    
         }
         else if (cmd == 'l' || cmd == 'm' || cmd == 'b')
         {

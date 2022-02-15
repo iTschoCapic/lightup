@@ -3,14 +3,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "game_ext.h"
+
 void game_print(cgame g)
 {
     uint i, j; /*i est verticale et j est horizontale*/
-    printf("   0123456\n   -------\n");
-    for (i = 0; i < DEFAULT_SIZE; i++)
+    printf("   ");
+    for (j = 0; j < game_nb_cols(g); j++)
+    {
+        printf("%d", j);
+    }
+    printf("\n   ");
+    for (j = 0; j < game_nb_cols(g); j++)
+    {
+        printf("-");
+    }
+    printf("\n");
+    for (i = 0; i < game_nb_rows(g); i++)
     {
         printf("%u |", i);
-        for (j = 0; j < DEFAULT_SIZE; j++)
+        for (j = 0; j < game_nb_cols(g); j++)
         {
             if (game_is_blank(g, i, j))
             {
@@ -46,7 +58,12 @@ void game_print(cgame g)
         }
         printf("|\n");
     }
-    printf("   -------\n");
+    printf("   ");
+    for (j = 0; j < game_nb_cols(g); j++)
+    {
+        printf("-");
+    }
+    printf("\n");
 }
 
 game game_default(void)

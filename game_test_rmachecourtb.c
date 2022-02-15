@@ -19,33 +19,47 @@
         }                                                                                   \
     } while (0)
 
-bool test_game_load(char *filename)
+/********************************************************************************************/
+
+bool test_game_load()
 {
-    game g = game_load(filename);
+    FILE *test = fopen("test.txt", "w");
+    fprintf(test, "7 5 0\nbbbbb\nbbbbb\nb*bbb\nbb-bb\nbbbwb\nbbbbb\nbbbbb\n");
+    fclose(test);
+    game g = game_new_empty_ext(7, 5, false);
     ASSERT(g);
-    game g2 = game_default();
+    game_set_square(g, 2, 1, S_LIGHTBULB);
+    game_set_square(g, 3, 2, S_MARK);
+    game_set_square(g, 4, 3, S_BLACKU);
+    game_update_flags(g);
+    game g2 = game_load("test.txt");
     ASSERT(g2);
     ASSERT(game_equal(g, g2));
     game_delete(g);
     game_delete(g2);
+    remove("test.txt");
     return true;
 }
 
 bool test_game_save(char *filename)
 {
-    game g = game_new_empty_ext(7, 7, false);
-    ASSERT(g);
-    game_save(g, filename);
     ASSERT(filename != NULL);
-    game g2 = game_new_empty_ext(7, 7, false);
+    game g = game_new_empty_ext(7, 5, false);
+    ASSERT(g);
+    game_set_square(g, 2, 1, S_LIGHTBULB);
+    game_set_square(g, 3, 2, S_MARK);
+    game_set_square(g, 4, 3, S_BLACKU);
+    game_update_flags(g);
+    game_save(g, filename);
+    game g2 = game_load(filename);
     ASSERT(game_equal(g, g2));
     game_delete(g);
     game_delete(g2);
-    remove("test_save.txt");
+    remove(filename);
     return true;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     if (argc == 1)
     {
@@ -56,9 +70,9 @@ int main(int argc, char* argv[])
     fprintf(stderr, "=> Start test \"%s\"\n", argv[1]);
     bool ok = false;
     if (strcmp("game_load", argv[1]) == 0)
-        ok = test_game_load(argv[1]);
+        ok = test_game_load();
     else if (strcmp("game_save", argv[1]) == 0)
-        ok = test_game_save(argv[1]);
+        ok = test_game_save("test_save.txt");
     else
     {
         fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
