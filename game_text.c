@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
         else if (cmd == 's')
         {
             char name;
-            ret = scanf("%s", &name);  
+            ret = scanf("%s", &name);
             if (ret == EOF)
             {
                 printf("End of File!\n");
@@ -98,7 +98,6 @@ int main(int argc, char* argv[])
             }
             game_save(current_game, &name);
             printf("Game saved in file '%s'\n", &name);
-    
         }
         else if (cmd == 'l' || cmd == 'm' || cmd == 'b')
         {

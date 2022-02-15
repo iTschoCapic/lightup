@@ -17,8 +17,8 @@ struct game_s
     uint width;
     uint height;
     bool wrapping;
-    queue *stack_moves;  // stack of moves done with latest at top
-    queue *stack_undone; // stack of undone moves
+    queue *stack_moves;   // stack of moves done with latest at top
+    queue *stack_undone;  // stack of undone moves
 };
 
 /**
@@ -29,7 +29,7 @@ struct history
 {
     uint row;
     uint column;
-    square state; // The state of the case before the move
+    square state;  // The state of the case before the move
 };
 
 /**
@@ -63,7 +63,7 @@ game game_new(square *squares)
         g->grid[i] = (square *)malloc(g->width * sizeof(square));
         check_if_error(g->grid[i] == NULL, "Not enough memory !");
     }
-    int k = 0; // Indice pour parcourir squares
+    int k = 0;  // Indice pour parcourir squares
     for (int i = 0; i < g->height; i++)
     {
         for (int j = 0; j < g->width; j++)
@@ -189,7 +189,7 @@ square game_get_state(cgame g, uint i, uint j)
 
     square state_sq = g->grid[i][j];
 
-    square state_without_flags = state_sq & S_MASK; // Gets the state of the square without its flag
+    square state_without_flags = state_sq & S_MASK;  // Gets the state of the square without its flag
 
     return state_without_flags;
 }
@@ -200,7 +200,7 @@ square game_get_flags(cgame g, uint i, uint j)
     check_if_error((i >= g->height || j >= g->width), "Invalid size !");
     square state_sq = g->grid[i][j];
 
-    square without_state = state_sq & F_MASK; // Gets the flag of the square without its state
+    square without_state = state_sq & F_MASK;  // Gets the flag of the square without its state
 
     return without_state;
 }
@@ -303,17 +303,17 @@ bool game_check_move(cgame g, uint i, uint j, square s)
     check_if_error(g == NULL, "Game is NULL pointer");
     check_if_error(g->grid == NULL, "Frid of the game is NULL pointer");
 
-    if (!(s == S_BLANK) & !(s == S_LIGHTBULB) & !(s == S_MARK)) // if s is not a blank, lightbulb or a mark -> illegal move
+    if (!(s == S_BLANK) & !(s == S_LIGHTBULB) & !(s == S_MARK))  // if s is not a blank, lightbulb or a mark -> illegal move
     {
         return false;
     }
 
-    if (i >= g->height || j >= g->width) // if i and j are not valid coordinates -> illegal move
+    if (i >= g->height || j >= g->width)  // if i and j are not valid coordinates -> illegal move
     {
         return false;
     }
 
-    if (game_is_black(g, i, j)) // if it is already a black wall at (i,j) -> illegal move
+    if (game_is_black(g, i, j))  // if it is already a black wall at (i,j) -> illegal move
     {
         return false;
     }
@@ -326,7 +326,7 @@ void game_play_move(game g, uint i, uint j, square s)
     check_if_error(g == NULL, "Game is NULL pointer");
     check_if_error(g->grid == NULL, "Frid of the game is NULL pointer");
 
-    if (!game_check_move(g, i, j, s)) // we first check it the move is legal
+    if (!game_check_move(g, i, j, s))  // we first check it the move is legal
     {
         return;
     }
@@ -340,10 +340,10 @@ void game_play_move(game g, uint i, uint j, square s)
 
     if (!queue_is_empty(g->stack_undone))
     {
-        queue_clear_full(g->stack_undone, free); // Clear undone moves history used by redo, because if a move is played you cannot redo it before undoing it first
+        queue_clear_full(g->stack_undone, free);  // Clear undone moves history used by redo, because if a move is played you cannot redo it before undoing it first
     }
-    game_set_square(g, i, j, s); // then we set set the square  loop to do to save game in g->stack_moves
-    game_update_flags(g);        // and we update the flags of the grid
+    game_set_square(g, i, j, s);  // then we set set the square  loop to do to save game in g->stack_moves
+    game_update_flags(g);         // and we update the flags of the grid
 }
 
 void game_update_flags(game g)
@@ -367,25 +367,25 @@ void game_update_flags(game g)
         {
             if (game_is_lightbulb(g, i, j))
             {
-                if (!game_is_lighted(g, i, j)) // We check that the square is not already flagged else it would cause an error
+                if (!game_is_lighted(g, i, j))  // We check that the square is not already flagged else it would cause an error
                 {
-                    g->grid[i][j] += F_LIGHTED; // We add the flag F_LIGHTED to the square (i,j)
+                    g->grid[i][j] += F_LIGHTED;  // We add the flag F_LIGHTED to the square (i,j)
                 }
                 // We put lighted marks on all the squares in the row or
                 // in the column of the lighbulb until we meet a black wall
-                int k = j - 1; // Row negative
+                int k = j - 1;  // Row negative
                 while (k != j)
                 {
                     if (k < 0)
                     {
-                        if (g->wrapping) // If wrapping is enabled, then we go to the opposite side and we continue in the same direction
+                        if (g->wrapping)  // If wrapping is enabled, then we go to the opposite side and we continue in the same direction
                         {
                             k = g->width - 1;
                             continue;
                         }
                         else
                         {
-                            break; // Else we stop here for this direction
+                            break;  // Else we stop here for this direction
                         }
                     }
                     if (game_is_black(g, i, k))
@@ -411,7 +411,7 @@ void game_update_flags(game g)
                     k--;
                 }
 
-                k = j + 1; // Row positive
+                k = j + 1;  // Row positive
                 while (k != j)
                 {
                     if (k >= g->width)
@@ -449,7 +449,7 @@ void game_update_flags(game g)
                     k++;
                 }
 
-                k = i - 1; // Column negative
+                k = i - 1;  // Column negative
                 while (k != i)
                 {
                     if (k < 0)
@@ -487,7 +487,7 @@ void game_update_flags(game g)
                     k--;
                 }
 
-                k = i + 1; // Column positive
+                k = i + 1;  // Column positive
                 while (k != i)
                 {
                     if (k >= g->height)
@@ -537,26 +537,26 @@ void game_update_flags(game g)
                 int black_number = game_get_black_number(g, i, j);
                 if (black_number != -1)
                 {
-                    uint lightbulb_nearby = 0; // this is the counter of lightbulb near of a black wall
+                    uint lightbulb_nearby = 0;  // this is the counter of lightbulb near of a black wall
 
-                    uint unlightable_squares = 0; // Count of lighted (not lightbulb) or marked squares around wall
+                    uint unlightable_squares = 0;  // Count of lighted (not lightbulb) or marked squares around wall
 
-                    uint available_squares = 4; // Count of squares around wall that can be filled (not a wall or a border)
+                    uint available_squares = 4;  // Count of squares around wall that can be filled (not a wall or a border)
 
-                    int k; // Variable usefull if wrapping is on to access the opposite side of the grid
+                    int k;  // Variable usefull if wrapping is on to access the opposite side of the grid
 
                     // Bottom case
                     k = i + 1;
                     if (k == g->height)
                     {
-                        if (g->wrapping) // If wrapping is enabled, we have to check the square on the opposite side
+                        if (g->wrapping)  // If wrapping is enabled, we have to check the square on the opposite side
                         {
                             k = 0;
                         }
                         else
                         {
                             available_squares--;
-                            k = -1; // Unused value to not trigger the next if
+                            k = -1;  // Unused value to not trigger the next if
                         }
                     }
                     if (k >= 0)
@@ -664,14 +664,14 @@ void game_update_flags(game g)
                     }
 
                     if (lightbulb_nearby > black_number)
-                    {                                                      // If there is too much lightbulb
-                        g->grid[i][j] = game_get_state(g, i, j) + F_ERROR; // then we add the ERROR flag
-                    }                                                      // to the black wall
+                    {                                                       // If there is too much lightbulb
+                        g->grid[i][j] = game_get_state(g, i, j) + F_ERROR;  // then we add the ERROR flag
+                    }                                                       // to the black wall
                     else
                     {
                         if (available_squares - unlightable_squares < black_number)
-                        {                                                      // If there is not enough blank cases around the wall to put the
-                            g->grid[i][j] = game_get_state(g, i, j) + F_ERROR; // number of lightbulb required then we add the ERROR flag
+                        {                                                       // If there is not enough blank cases around the wall to put the
+                            g->grid[i][j] = game_get_state(g, i, j) + F_ERROR;  // number of lightbulb required then we add the ERROR flag
                         }
                     }
                 }
@@ -687,7 +687,7 @@ bool game_is_over(cgame g)
 
     for (int i = 0; i < g->height; i++)
     {
-        for (int j = 0; j < g->width; j++) // Checks each square of the grid for errors and lighting problems
+        for (int j = 0; j < g->width; j++)  // Checks each square of the grid for errors and lighting problems
         {
             if (game_has_error(g, i, j))
             {
@@ -736,7 +736,7 @@ game game_new_ext(uint nb_rows, uint nb_cols, square *squares, bool wrapping)
         g->grid[i] = (square *)malloc(nb_cols * sizeof(square));
         check_if_error(g->grid[i] == NULL, "Not enough memory !");
     }
-    int k = 0; // Indice pour parcourir squares
+    int k = 0;  // Indice pour parcourir squares
     for (int i = 0; i < nb_rows; i++)
     {
         for (int j = 0; j < nb_cols; j++)
@@ -782,26 +782,26 @@ game game_new_empty_ext(uint nb_rows, uint nb_cols, bool wrapping)
 // Fonctions Arthur
 
 uint game_nb_rows(cgame g)
-{ 
+{
     check_if_error(g == NULL, "Game is NULL pointer");
     check_if_error(g->grid == NULL, "Grid of the game is NULL pointer");
 
     return g->height;
 }
 
-uint game_nb_cols(cgame g) 
-{ 
+uint game_nb_cols(cgame g)
+{
     check_if_error(g == NULL, "Game is NULL pointer");
     check_if_error(g->grid == NULL, "Grid of the game is NULL pointer");
-    
-    return g->width; 
+
+    return g->width;
 }
 
-bool game_is_wrapping(cgame g) 
-{ 
+bool game_is_wrapping(cgame g)
+{
     check_if_error(g == NULL, "Game is NULL pointer");
     check_if_error(g->grid == NULL, "Grid of the game is NULL pointer");
-    
+
     return g->wrapping;
 }
 
@@ -809,9 +809,9 @@ bool game_is_wrapping(cgame g)
 
 void game_undo(game g)
 {
-    if (!queue_is_empty(g->stack_moves)) // If there is nothing to undo, we ignore the rest
+    if (!queue_is_empty(g->stack_moves))  // If there is nothing to undo, we ignore the rest
     {
-        struct history *last_move = (struct history *)queue_peek_head(g->stack_moves); // We get the last move played
+        struct history *last_move = (struct history *)queue_peek_head(g->stack_moves);  // We get the last move played
         struct history *last_undone = (struct history *)malloc(sizeof(struct history));
         // check_if_error(last_undone == NULL, "Not enough memory !");
         if (last_undone == NULL)
@@ -822,7 +822,7 @@ void game_undo(game g)
         last_undone->row = last_move->row;
         last_undone->column = last_move->column;
         last_undone->state = game_get_state(g, last_move->row, last_move->column);
-        queue_push_head(g->stack_undone, last_undone); // Stocks the state of the case before the undo in the undone stack to be used in redo
+        queue_push_head(g->stack_undone, last_undone);  // Stocks the state of the case before the undo in the undone stack to be used in redo
         game_set_square(g, last_move->row, last_move->column, last_move->state);
         free(queue_peek_head(g->stack_moves));
         queue_pop_head(g->stack_moves);
@@ -839,7 +839,7 @@ void game_redo(game g)
         // check_if_error(last_undone == NULL, "Not enough memory !");
         if (last_move == NULL)
         {
-            fprintf(stderr, "Not enough memory !\n"); // Store the state of the case before the move in the history
+            fprintf(stderr, "Not enough memory !\n");  // Store the state of the case before the move in the history
             exit(EXIT_FAILURE);
         }
         last_move->row = last_undone->row;
