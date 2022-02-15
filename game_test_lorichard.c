@@ -6,14 +6,15 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
-#include "queue.h"
 #include "game_tools.h"
+#include "queue.h"
 
-bool test_game_load(void){
+bool test_game_load(void)
+{
     game jeu_default = game_default();
-    game jeu ;
+    game jeu;
     jeu = game_load("../default.txt");
-    bool resultat = game_equal(jeu_default , jeu);
+    bool resultat = game_equal(jeu_default, jeu);
     game_delete(jeu);
     game_delete(jeu_default);
     return resultat;

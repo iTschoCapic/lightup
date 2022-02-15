@@ -45,7 +45,7 @@ bool test_game_save(char *filename)
     return true;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     if (argc == 1)
     {
