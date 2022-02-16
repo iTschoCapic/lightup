@@ -115,3 +115,14 @@ void game_save(cgame g, char *filename)
     }
     fclose(save);
 }
+
+
+bool game_solve(game g){
+
+}
+
+
+uint game_nb_solutions(cgame g){
+    uint cmp = 0; 
+    return cmp;
+}
