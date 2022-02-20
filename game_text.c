@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
     game current_game;
     if (argc == 2)
     {
+        // printf("%s", argv[1]);
         current_game = game_load(argv[1]);
     }
     else
@@ -98,6 +99,11 @@ int main(int argc, char* argv[])
             }
             game_save(current_game, &name);
             printf("Game saved in file '%s'\n", &name);
+        }
+        else if (cmd == 's')
+        {
+            bool flag = game_solve(current_game);
+            printf("\n%d\n", flag);
         }
         else if (cmd == 'l' || cmd == 'm' || cmd == 'b')
         {

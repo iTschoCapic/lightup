@@ -116,13 +116,61 @@ void game_save(cgame g, char *filename)
     fclose(save);
 }
 
+bool solve_rec(game g, int pos, int len)
+{
+    // stop recursive calls
+    if (pos == len)
+    {
+        game_update_flags(g);
+        if (game_is_over(g))
+        {
+            return true;
+        }
+        return false;
+    }
+    int nb_cols = game_nb_cols(g);
+    int row = pos / nb_cols;
+    int col = pos % nb_cols;
 
-bool game_solve(game g){
+    if (game_is_black(g, row, col))
+    {
+        return solve_rec(g, pos + 1, len);
+    }
+    //
+    game_set_square(g, row, col, S_BLANK);
+    bool flag = solve_rec(g, pos + 1, len);
 
+    if (!flag)
+    {
+        game_set_square(g, row, col, S_LIGHTBULB);
+        flag = solve_rec(g, pos + 1, len);
+    }
+    return flag;
 }
 
+bool game_solve(game g)
+{
+    game sol = game_copy(g);
+    int nb_cols = game_nb_cols(g);
+    int nb_rows = game_nb_rows(g);
+    int len = nb_cols * nb_rows;
+    if (solve_rec(sol, 0, len))
+    {
+        for (int i = 0; i < nb_rows; i++)
+        {
+            for (int j = 0; j < nb_cols; j++)
+            {
+                game_set_square(g, i, j, game_get_square(sol, i, j));
+            }
+        }
+        game_delete(sol);
+        return true;
+    }
+    return false;
+}
 
-uint game_nb_solutions(cgame g){
-    uint cmp = 0; 
+uint game_nb_solutions(cgame g)
+{
+    uint cmp = 0;
     return cmp;
 }
