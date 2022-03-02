@@ -4,9 +4,7 @@ project(lightup C)
 include(CTest)
 enable_testing()
 
-set(CMAKE_C_FLAGS "-Wall -std=c99")            # options de compilation génériques
-set(CMAKE_C_FLAGS_DEBUG "-g -O0 --coverage")   # options de compilation en mode Debug
-set(CMAKE_C_FLAGS_RELEASE "-O3")               # options de compilation en mode Release
+set(CMAKE_C_FLAGS "-std=c99 -g -Wall --coverage")
 
 #Executable tests:
 add_executable(game_text game_text.c)
