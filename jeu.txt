@@ -1,7 +1,6 @@
-6 6 0
-bb1bbb
-bb2bbb
-bbbbbw
-bbbbbb
-1wbbbb
-bbbb2b
+5 5 0
+bb1bb
+bb2bb
+bbbbb
+bbbbb
+1wbbb

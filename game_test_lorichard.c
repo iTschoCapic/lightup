@@ -13,7 +13,7 @@ bool test_game_load(void)
 {
     game jeu_default = game_default();
     game jeu;
-    jeu = game_load("../default.txt");
+    jeu = game_load("default.txt");
     bool resultat = game_equal(jeu_default, jeu);
     game_delete(jeu);
     game_delete(jeu_default);
@@ -23,6 +23,13 @@ bool test_game_load(void)
 bool test_game_solve(void){
     game jeu = game_load("../jeu.txt");
     return game_solve(jeu);
+}
+
+bool test_game_nb_solutions(void){
+    game jeu = game_load("jeu.txt");
+    unsigned int nb_sol = game_nb_solutions(jeu);
+    //fprintf(stderr,"%u\n", nb_sol);
+    return true;
 }
 
 int main(int argc, char* argv[])
@@ -39,6 +46,8 @@ int main(int argc, char* argv[])
         ok = test_game_load();
     if (strcmp("game_solve", argv[1]) == 0)
         ok = test_game_solve();
+    if (strcmp("game_nb_solutions", argv[1]) == 0)
+        ok = test_game_nb_solutions();
     else
     {
         fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
