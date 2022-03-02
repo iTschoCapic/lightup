@@ -20,6 +20,11 @@ bool test_game_load(void)
     return resultat;
 }
 
+bool test_game_solve(void){
+    game jeu = game_load("../jeu.txt");
+    return game_solve(jeu);
+}
+
 int main(int argc, char* argv[])
 {
     if (argc == 1)
@@ -32,6 +37,8 @@ int main(int argc, char* argv[])
     bool ok = false;
     if (strcmp("game_load", argv[1]) == 0)
         ok = test_game_load();
+    if (strcmp("game_solve", argv[1]) == 0)
+        ok = test_game_solve();
     else
     {
         fprintf(stderr, "Error: test \"%s\" not found!\n", argv[1]);
