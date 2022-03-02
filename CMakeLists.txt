@@ -8,6 +8,7 @@ set(CMAKE_C_FLAGS "-std=c99 -g -Wall --coverage")
 
 #Executable tests:
 add_executable(game_text game_text.c)
+add_executable(game_solve game_solve.c)
 
 add_executable(game_test_maaudrain game_test_maaudrain.c)
 add_executable(game_test_lorichard game_test_lorichard.c)
@@ -24,6 +25,7 @@ target_link_libraries(game_test_maaudrain game )
 target_link_libraries(game_test_arledoux game )
 target_link_libraries(game_test_lorichard game )
 target_link_libraries(game_test_rmachecourtb game)
+target_link_libraries(game_solve game)
 
 #Tests dummy
 add_test(test_maaudrain_dummy ./game_test_maaudrain dummy)
