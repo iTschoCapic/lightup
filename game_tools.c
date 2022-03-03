@@ -189,8 +189,55 @@ bool game_solve(game g)
     return false;
 }
 
+void genWords(cgame g, int pos, int len, int *word, int *count)
+{
+    int nb_cols = game_nb_cols(g);
+    int row = pos / nb_cols;
+    int col = pos % nb_cols;
+    // stop recursive calls
+    if (pos == len)
+    {
+        game jeu = game_new_ext(game_nb_rows(g), game_nb_cols(g), (square *)word, game_is_wrapping(g));
+        game_update_flags(jeu);
+        if (game_is_over(jeu))
+        {
+            // game_print(jeu);
+            (*count)++;
+        }
+        game_delete(jeu);
+        return;
+    }
+    if (game_is_black(g, row, col))
+    {
+        word[pos] = game_get_black_number(g, row, col);
+        // fprintf(stderr,"%d\n", game_get_black_number(g ,row ,col));
+        genWords(g, pos + 1, len, word, count);
+    }
+    else
+    {
+        // extend current word recursively with value 0 at position pos
+        word[pos] = 0;
+        genWords(g, pos + 1, len, word, count);
+
+        // extend current word recursively with value 1 at position pos
+        word[pos] = 1;
+        genWords(g, pos + 1, len, word, count);
+    }
+}
+
 uint game_nb_solutions(cgame g)
 {
-    uint cmp = 0;
+    int cmp = 0;
+    int nb_cols = game_nb_cols(g);
+    int nb_rows = game_nb_rows(g);
+    int len = (nb_cols * nb_rows);
+    int word[len];
+    // reset word
+    for (int k = 0; k < len; k++)
+    {
+        word[k] = 0;
+    }
+    // generate all possible words
+    genWords(g, 0, len, word, &cmp);
     return cmp;
 }
