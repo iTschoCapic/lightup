@@ -119,7 +119,7 @@ void game_save(cgame g, char *filename)
 bool solve_rec(game g, int pos, int len)
 {
     int nb_cols = game_nb_cols(g);
-    int nb_rows = game_nb_rows(g);
+    /*int nb_rows = game_nb_rows(g);
     for (int i = 0; i < nb_rows; i++)
     {
         for (int j = 0; j < nb_cols; j++)
@@ -129,7 +129,7 @@ bool solve_rec(game g, int pos, int len)
                 return false;
             }
         }
-    }
+    }*/
     // stop recursive calls
     if (pos == len)
     {
@@ -153,6 +153,7 @@ bool solve_rec(game g, int pos, int len)
     }
     //
     game_set_square(g, row, col, S_BLANK);
+    game_print(g);
     bool flag = solve_rec(g, pos + 1, len);
 
     if (!flag)
@@ -160,6 +161,7 @@ bool solve_rec(game g, int pos, int len)
         if (!game_is_lighted(g, row, col))
         {
             game_set_square(g, row, col, S_LIGHTBULB);
+            game_print(g);
             flag = solve_rec(g, pos + 1, len);
         }
     }
