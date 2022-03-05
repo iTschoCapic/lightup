@@ -9,26 +9,41 @@
 #include "game_tools.h"
 
 int main(int argc, char* argv[])
-{;
+{
+    ;
     game current_game;
-    if (argc >= 3 && argc <= 4){
+    if (argc >= 3 && argc <= 4)
+    {
         current_game = game_load(argv[2]);
-
-    } else{
+    }
+    else
+    {
         return EXIT_FAILURE;
     }
-    if (strcmp("-s", argv[1]) == 0){
+    if (strcmp("-s", argv[1]) == 0)
+    {
         game_solve(current_game);
-        if (argc == 4){
+        if (argc == 4)
+        {
             game_save(current_game, argv[3]);
-        } else{
+        }
+        else
+        {
             game_print(current_game);
         }
-    } else if (strcmp("-c", argv[1]) == 0){
-        if (argc == 4){
-            FILE *save = fopen(argv[3], "w");
-            fprintf(save, "%d", game_nb_solutions(current_game));
-            fprintf(save, "\n");
+    }
+    else if (strcmp("-c", argv[1]) == 0)
+    {
+        int nb_sol = game_nb_solutions(current_game);
+        if (argc == 4)
+        {
+            FILE* save = fopen(argv[3], "w");
+            fprintf(save, "%d\n", nb_sol);
+            fclose(save);
+        }
+        else
+        {
+            printf("This game has %d solution(s).\n", nb_sol);
         }
     }
     return EXIT_SUCCESS;
