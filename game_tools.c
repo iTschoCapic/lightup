@@ -118,19 +118,6 @@ void game_save(cgame g, char *filename)
 
 bool solve_rec(game g, int pos, int len)
 {
-    int nb_cols = game_nb_cols(g);
-    /*int nb_rows = game_nb_rows(g);
-    for (int i = 0; i < nb_rows; i++)
-    {
-        for (int j = 0; j < nb_cols; j++)
-        {
-            if (game_has_error(g, i, j))
-            {
-                return false;
-            }
-        }
-    }*/
-    // stop recursive calls
     if (pos == len)
     {
         game_update_flags(g);
@@ -140,30 +127,32 @@ bool solve_rec(game g, int pos, int len)
         }
         return false;
     }
+    int nb_cols = game_nb_cols(g);
+    int nb_rows = game_nb_rows(g);
     int row = pos / nb_cols;
     int col = pos % nb_cols;
-
-    if (game_is_black(g, row, col))
+    bool flag = false;
+    if (game_is_black(g, row, col) || game_is_lighted(g, row, col))
     {
         return solve_rec(g, pos + 1, len);
     }
-    if (game_is_lighted(g, row, col))
+    game_play_move(g, row, col, S_LIGHTBULB);
+    for (int i = 0; i < nb_rows; i++)
     {
-        return solve_rec(g, pos + 1, len);
+        for (int j = 0; j < nb_cols; j++)
+        {
+            if (game_has_error(g, i, j))
+            {
+                game_play_move(g, row, col, S_BLANK);
+                flag = solve_rec(g, pos + 1, len);
+            }
+        }
     }
-    //
-    game_set_square(g, row, col, S_BLANK);
-    game_print(g);
-    bool flag = solve_rec(g, pos + 1, len);
-
+    flag = solve_rec(g, pos + 1, len);
     if (!flag)
     {
-        if (!game_is_lighted(g, row, col))
-        {
-            game_set_square(g, row, col, S_LIGHTBULB);
-            game_print(g);
-            flag = solve_rec(g, pos + 1, len);
-        }
+        game_play_move(g, row, col, S_BLANK);
+        flag = solve_rec(g, pos + 1, len);
     }
     return flag;
 }

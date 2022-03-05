@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         }
         else if (cmd == 'q')
         {
-            current_game = game_default_solution();
+            game_solve(current_game);
             game_print(current_game);  // Abandon + affichage de la solution
             printf("shame\n");
             game_delete(current_game);
