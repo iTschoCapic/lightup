@@ -117,16 +117,20 @@ void game_save(cgame g, char *filename)
     fclose(save);
 }
 
+/**
+ * @brief Auxiliary recursive function for game_solve
+ *
+ * @param g The game to solve
+ * @param pos The current position in the grid
+ * @param len The number of cases in the game
+ * @return true if there is a solution
+ * @return false otherwise
+ */
 bool solve_rec(game g, int pos, int len)
 {
     if (pos == len)
     {
-        game_update_flags(g);
-        if (game_is_over(g))
-        {
-            return true;
-        }
-        return false;
+        return game_is_over(g);
     }
     int nb_cols = game_nb_cols(g);
     int nb_rows = game_nb_rows(g);
@@ -179,6 +183,15 @@ bool game_solve(game g)
     return false;
 }
 
+/**
+ * @brief Auxiliary recursive function for game_nb_solutions
+ *
+ * @param g
+ * @param pos
+ * @param len
+ * @param word
+ * @param count
+ */
 void genWords(cgame g, int pos, int len, int *word, int *count)
 {
     int nb_cols = game_nb_cols(g);
@@ -191,7 +204,7 @@ void genWords(cgame g, int pos, int len, int *word, int *count)
         game_update_flags(jeu);
         if (game_is_over(jeu))
         {
-            // game_print(jeu);
+            game_print(jeu);
             (*count)++;
         }
         game_delete(jeu);

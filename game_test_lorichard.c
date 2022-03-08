@@ -9,26 +9,49 @@
 #include "game_tools.h"
 #include "queue.h"
 
+#define ASSERT(expr)                                                                        \
+    do                                                                                      \
+    {                                                                                       \
+        if ((expr) == 0)                                                                    \
+        {                                                                                   \
+            fprintf(stderr, "[%s:%d] Assertion '%s' failed!\n", __FILE__, __LINE__, #expr); \
+            abort();                                                                        \
+        }                                                                                   \
+    } while (0)
+
 bool test_game_load(void)
 {
     game jeu_default = game_default();
     game jeu;
-    jeu = game_load("default.txt");
+    jeu = game_load("../games/default.txt");
     bool resultat = game_equal(jeu_default, jeu);
     game_delete(jeu);
     game_delete(jeu_default);
     return resultat;
 }
 
-bool test_game_solve(void){
-    game jeu = game_load("../jeu.txt");
-    return game_solve(jeu);
+bool test_game_solve(void)
+{
+    game g1 = game_default();
+    game g2 = game_default_solution();
+    game_solve(g1);
+    ASSERT(game_equal(g1, g2));
+    game g3 = game_load("../games/impossible.txt");
+    game g4 = game_copy(g3);
+    game_solve(g3);
+    ASSERT(game_equal(g3, g4));
+    game_delete(g1);
+    game_delete(g2);
+    game_delete(g3);
+    game_delete(g4);
+    return true;
 }
 
-bool test_game_nb_solutions(void){
-    game jeu = game_load("jeu.txt");
+bool test_game_nb_solutions(void)
+{
+    /*game jeu = game_load("");
     unsigned int nb_sol = game_nb_solutions(jeu);
-    //fprintf(stderr,"%u\n", nb_sol);
+    // fprintf(stderr,"%u\n", nb_sol);*/
     return true;
 }
 
@@ -44,9 +67,9 @@ int main(int argc, char* argv[])
     bool ok = false;
     if (strcmp("game_load", argv[1]) == 0)
         ok = test_game_load();
-    if (strcmp("game_solve", argv[1]) == 0)
+    else if (strcmp("game_solve", argv[1]) == 0)
         ok = test_game_solve();
-    if (strcmp("game_nb_solutions", argv[1]) == 0)
+    else if (strcmp("game_nb_solutions", argv[1]) == 0)
         ok = test_game_nb_solutions();
     else
     {
