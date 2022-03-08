@@ -149,7 +149,7 @@ bool solve_rec(game g, int pos, int len)
             if (game_has_error(g, i, j))
             {
                 game_play_move(g, row, col, S_BLANK);
-                flag = solve_rec(g, pos + 1, len);
+                return solve_rec(g, pos + 1, len);
             }
         }
     }
@@ -180,67 +180,66 @@ bool game_solve(game g)
         game_delete(sol);
         return true;
     }
+    game_delete(sol);
     return false;
 }
 
 /**
  * @brief Auxiliary recursive function for game_nb_solutions
  *
- * @param g
- * @param pos
- * @param len
- * @param word
- * @param count
+ * @param g a game (will be modified)
+ * @param pos The current position in the grid
+ * @param len The number of cases in the game
+ * @param count The pointer that stores the number of solutions
  */
-void genWords(cgame g, int pos, int len, int *word, int *count)
+void nb_sol_rec(game g, int pos, int len, int *count)
 {
-    int nb_cols = game_nb_cols(g);
-    int row = pos / nb_cols;
-    int col = pos % nb_cols;
-    // stop recursive calls
     if (pos == len)
     {
-        game jeu = game_new_ext(game_nb_rows(g), game_nb_cols(g), (square *)word, game_is_wrapping(g));
-        game_update_flags(jeu);
-        if (game_is_over(jeu))
+        if (game_is_over(g))
         {
-            game_print(jeu);
             (*count)++;
+            game_print(g);
         }
-        game_delete(jeu);
         return;
     }
-    if (game_is_black(g, row, col))
+    int nb_cols = game_nb_cols(g);
+    int nb_rows = game_nb_rows(g);
+    int row = pos / nb_cols;
+    int col = pos % nb_cols;
+    if (game_is_black(g, row, col) || game_is_lighted(g, row, col))
     {
-        word[pos] = game_get_state(g, row, col);
-        // fprintf(stderr,"%d\n", game_get_black_number(g ,row ,col));
-        genWords(g, pos + 1, len, word, count);
+        nb_sol_rec(g, pos + 1, len, count);
+        return;
     }
-    else
+    game_play_move(g, row, col, S_LIGHTBULB);
+    for (int i = 0; i < nb_rows; i++)
     {
-        // extend current word recursively with value 0 at position pos
-        word[pos] = 0;
-        genWords(g, pos + 1, len, word, count);
-
-        // extend current word recursively with value 1 at position pos
-        word[pos] = 1;
-        genWords(g, pos + 1, len, word, count);
+        for (int j = 0; j < nb_cols; j++)
+        {
+            if (game_has_error(g, i, j))
+            {
+                game_play_move(g, row, col, S_BLANK);
+                nb_sol_rec(g, pos + 1, len, count);
+                return;
+            }
+        }
     }
+    nb_sol_rec(g, pos + 1, len, count);
+    game_play_move(g, row, col, S_BLANK);
+    nb_sol_rec(g, pos + 1, len, count);
+    return;
 }
 
 uint game_nb_solutions(cgame g)
 {
-    int cmp = 0;
-    int nb_cols = game_nb_cols(g);
-    int nb_rows = game_nb_rows(g);
-    int len = (nb_cols * nb_rows);
-    int word[len];
-    // reset word
-    for (int k = 0; k < len; k++)
-    {
-        word[k] = 0;
-    }
-    // generate all possible words
-    genWords(g, 0, len, word, &cmp);
-    return cmp;
+    int cpt = 0;
+    game sol = game_copy(g);
+    game_restart(sol);
+    int nb_cols = game_nb_cols(sol);
+    int nb_rows = game_nb_rows(sol);
+    int len = nb_cols * nb_rows;
+    nb_sol_rec(sol, 0, len, &cpt);
+    game_delete(sol);
+    return cpt;
 }

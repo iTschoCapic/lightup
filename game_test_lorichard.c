@@ -51,12 +51,9 @@ bool test_game_nb_solutions(void)
 {
     game jeu = game_load("../games/3x3.txt");
     unsigned int nb_sol = game_nb_solutions(jeu);
-    if (nb_sol == 4)
-    {
-        return true;
-    }
-    // fprintf(stderr,"%u\n", nb_sol);
-    return false;
+    ASSERT(nb_sol == 4);
+    game_delete(jeu);
+    return true;
 }
 
 int main(int argc, char* argv[])
