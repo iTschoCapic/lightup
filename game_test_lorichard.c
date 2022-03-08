@@ -13,7 +13,7 @@ bool test_game_load(void)
 {
     game jeu_default = game_default();
     game jeu;
-    jeu = game_load("default.txt");
+    jeu = game_load("../games/3x3.txt");
     bool resultat = game_equal(jeu_default, jeu);
     game_delete(jeu);
     game_delete(jeu_default);
@@ -21,15 +21,18 @@ bool test_game_load(void)
 }
 
 bool test_game_solve(void){
-    game jeu = game_load("../jeu.txt");
+    game jeu = game_load("../games/3x3.txt");
     return game_solve(jeu);
 }
 
 bool test_game_nb_solutions(void){
-    game jeu = game_load("jeu.txt");
+    game jeu = game_load("../games/3x3.txt");
     unsigned int nb_sol = game_nb_solutions(jeu);
+    if (nb_sol == 4 ){
+        return true;
+    }
     //fprintf(stderr,"%u\n", nb_sol);
-    return true;
+    return false;
 }
 
 int main(int argc, char* argv[])
