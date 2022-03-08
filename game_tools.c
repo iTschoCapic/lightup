@@ -212,7 +212,7 @@ void genWords(cgame g, int pos, int len, int *word, int *count)
     }
     if (game_is_black(g, row, col))
     {
-        word[pos] = game_get_black_number(g, row, col);
+        word[pos] = game_get_state(g, row, col);
         // fprintf(stderr,"%d\n", game_get_black_number(g ,row ,col));
         genWords(g, pos + 1, len, word, count);
     }

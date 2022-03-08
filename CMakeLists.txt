@@ -77,8 +77,8 @@ add_test(test_arledoux_game_nb_cols ./game_test_arledoux game_nb_cols)
 add_test(test_arledoux_game_is_wrapping ./game_test_arledoux game_is_wrapping)
 
 #Tests Loïc ;
-add_test(test_lorichard_game_load ./game_test_lorichard game_load)
-add_test(test_lorichard_game_solve ./game_test_lorichard game_solve)
+#add_test(test_lorichard_game_load ./game_test_lorichard game_load)
+#add_test(test_lorichard_game_solve ./game_test_lorichard game_solve)
 add_test(test_lorichard_game_nb_solutions ./game_test_lorichard game_nb_solutions)
 
 #Tests Renaud:
