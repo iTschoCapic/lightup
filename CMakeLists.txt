@@ -8,10 +8,16 @@ set(CMAKE_C_FLAGS "-Wall -std=c99")            # options de compilation généri
 set(CMAKE_C_FLAGS_DEBUG "-g -O0 --coverage")   # options de compilation en mode Debug
 set(CMAKE_C_FLAGS_RELEASE "-O3")               # options de compilation en mode Release
 
+## use a CMake3 package to solve SDL2 dependencies
+find_package(SDL2 REQUIRED)
+set(SDL2_ALL_INC ${SDL2_INCLUDE_DIRS})
+set(SDL2_ALL_LIBS ${SDL2_LIBRARIES} -lSDL2_ttf -lSDL2_image) # add extra SDL2 libraries
 
 #Executable tests:
 add_executable(game_text game_text.c)
 add_executable(game_solve game_solve.c)
+
+add_executable(game_sld game_sld.c model.c)
 
 add_executable(game_test_maaudrain game_test_maaudrain.c)
 add_executable(game_test_lorichard game_test_lorichard.c)
@@ -29,6 +35,7 @@ target_link_libraries(game_test_arledoux game )
 target_link_libraries(game_test_lorichard game )
 target_link_libraries(game_test_rmachecourtb game)
 target_link_libraries(game_solve game)
+target_link_libraries(game_sld ${SDL2_ALL_LIBS} m)
 
 #Tests dummy
 add_test(test_maaudrain_dummy ./game_test_maaudrain dummy)
@@ -84,3 +91,8 @@ add_test(test_lorichard_game_nb_solutions ./game_test_lorichard game_nb_solution
 #Tests Renaud:
 add_test(test_rmachecourtb_game_load ./game_test_rmachecourtb game_load)
 add_test(test_rmachecourtb_game_save ./game_test_rmachecourtb game_save)
+
+## copy useful data files in build dir
+foreach(file "background.png" "mario.png" "arial.ttf")
+  file(COPY ${file} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+endforeach(file)

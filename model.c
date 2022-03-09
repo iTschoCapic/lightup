@@ -1,13 +1,18 @@
 #include "model.h"
 
-#include <SDL.h>
-#include <SDL_image.h>  // required to load transparent texture from PNG
-#include <SDL_ttf.h>    // required to use TTF fonts
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>  // required to load transparent texture from PNG
+#include <SDL2/SDL_ttf.h>    // required to use TTF fonts
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 /* **************************************************************** */
+
+#define FONT "arial.ttf"
+#define FONTSIZE 36
+#define BACKGROUND "background.png"
+#define MARIO "mario.png"
 
 struct Env_t
 {
