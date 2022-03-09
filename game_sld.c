@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
     if (TTF_Init() != 0) ERROR("Error: TTF_Init (%s)", SDL_GetError());
 
     /* create window and renderer */
-    SDL_Window* win = SDL_CreateWindow(APP_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_Window* win = SDL_CreateWindow("lightup", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 900, 900, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!win) ERROR("Error: SDL_CreateWindow (%s)", SDL_GetError());
     SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!ren) ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_SOFTWARE);
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
         }
 
         /* background in gray */
-        SDL_SetRenderDrawColor(ren, 0xA0, 0xA0, 0xA0, 0xFF);
+        SDL_SetRenderDrawColor(ren, 240, 240, 240, 0xFF);
         SDL_RenderClear(ren);
 
         /* render all what you want */

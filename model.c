@@ -23,6 +23,8 @@ struct Env_t
     SDL_Texture *mark;
     SDL_Texture *title;
     int grid_height, grid_width;
+    SDL_Rect cases[49];
+    SDL_Point ligne_depart,ligne_arrivee;
 };
 
 /* **************************************************************** */
@@ -40,6 +42,51 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
 
 void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
 { /* PUT YOUR CODE HERE TO RENDER TEXTURES, ... */
+    env->cases[0].x = env->cases[0].y = 0;
+    env->cases[0].w = env->cases[0].h = 100;
+    for(int i = 1; i != 35; i++)
+    {
+        env->cases[i].x = env->cases[i-1].x + 200;
+        env->cases[i].y = env->cases[i-1].y;
+
+        if(i%7 == 0) //retour à la ligne
+        {
+            env->cases[i].x = (i%7 == 0) ? 0 : 100;
+            env->cases[i].y = env->cases[i-1].y + 100;
+        }
+        env->cases[i].w = env->cases[i].h = 100; //taille d'une case : 100 x 100
+    }
+    if(SDL_RenderFillRects(ren,env->cases,49) <0)//Remplissage des cases blanches
+    {
+        printf("Erreur lors des remplissages de rectangles: %s",SDL_GetError());
+        return ;
+    }
+    // À présent, occupons nous des lignes
+    // On ne peut pas utiliser la fonction SDL_RenderDrawLines
+    // car celle-ci ne permet pas de créer des lignes indépendantes comme nous voulons le faire mais des chemins
+
+    SDL_SetRenderDrawColor(ren,0,0,0,255);//Couleur rouge
+
+    // Lignes horizontales
+    env->ligne_depart.x = 100;
+    env->ligne_arrivee.x = 800;
+    env->ligne_depart.y = 0;
+    for(int i = 0; i!=8; i++)
+    {
+      env->ligne_depart.y += 100;
+      env->ligne_arrivee.y = env->ligne_depart.y;
+      SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
+    }
+    // Lignes verticales
+    env->ligne_depart.x = 0;
+    env->ligne_depart.y = 100;
+    env->ligne_arrivee.y = 800;
+    for(int i = 0; i!=8; i++)
+    {
+      env->ligne_depart.x += 100;
+      env->ligne_arrivee.x = env->ligne_depart.x;
+      SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
+    }
 }
 
 /* **************************************************************** */
