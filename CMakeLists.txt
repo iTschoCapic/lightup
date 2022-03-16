@@ -17,7 +17,7 @@ set(SDL2_ALL_LIBS ${SDL2_LIBRARIES} -lSDL2_ttf -lSDL2_image) # add extra SDL2 li
 add_executable(game_text game_text.c)
 add_executable(game_solve game_solve.c)
 
-add_executable(game_sld game_sld.c model.c)
+add_executable(game_sdl game_sdl.c model.c)
 
 add_executable(game_test_maaudrain game_test_maaudrain.c)
 add_executable(game_test_lorichard game_test_lorichard.c)
@@ -35,7 +35,7 @@ target_link_libraries(game_test_arledoux game )
 target_link_libraries(game_test_lorichard game )
 target_link_libraries(game_test_rmachecourtb game)
 target_link_libraries(game_solve game)
-target_link_libraries(game_sld ${SDL2_ALL_LIBS} m game)
+target_link_libraries(game_sdl ${SDL2_ALL_LIBS} m game)
 
 #Tests dummy
 add_test(test_maaudrain_dummy ./game_test_maaudrain dummy)
