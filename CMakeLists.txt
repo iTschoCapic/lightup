@@ -35,7 +35,7 @@ target_link_libraries(game_test_arledoux game )
 target_link_libraries(game_test_lorichard game )
 target_link_libraries(game_test_rmachecourtb game)
 target_link_libraries(game_solve game)
-target_link_libraries(game_sld ${SDL2_ALL_LIBS} m)
+target_link_libraries(game_sld ${SDL2_ALL_LIBS} m game)
 
 #Tests dummy
 add_test(test_maaudrain_dummy ./game_test_maaudrain dummy)
