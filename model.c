@@ -26,7 +26,6 @@ struct Env_t
     SDL_Texture *mark;
     SDL_Texture *title;
     game jeu;
-    SDL_Rect *cases;
     int window_width , window_height ;
     SDL_Point ligne_depart,ligne_arrivee;
 };
@@ -36,35 +35,34 @@ struct Env_t
 Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
 {
     Env *env = malloc(sizeof(struct Env_t));
-    env->jeu = game_load(argv[2]);
-    env->cases = 0;
+    env->jeu = game_load(argv[1]);
     SDL_GetWindowSize(win, &env->window_width , &env->window_height);
     env->ligne_depart.x = env->window_width/(game_nb_rows(env->jeu)+2);
     env->ligne_depart.y = env->window_height/(game_nb_cols(env->jeu)+2);
-    /* PUT YOUR CODE HERE TO INIT TEXTURES, ... */
-
     return env;
 }
 
 /* **************************************************************** */
 
 void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
-{ /* PUT YOUR CODE HERE TO RENDER TEXTURES, ... */
-    env->cases[0].x = env->cases[0].y = 0;
-    env->cases[0].w = env->cases[0].h = 100;
+{
+    SDL_GetWindowSize(win, &env->window_width , &env->window_height);
+    SDL_Rect cases[game_nb_rows(env->jeu)*game_nb_cols(env->jeu)];
+    cases[0].x = cases[0].y = 0;
+    cases[0].w = cases[0].h = env->window_width/(game_nb_rows(env->jeu)+2);
     for(int i = 1; i != (game_nb_rows(env->jeu)*game_nb_cols(env->jeu)); i++)
     {
-        env->cases[i].x = env->cases[i-1].x + 200;
-        env->cases[i].y = env->cases[i-1].y;
+        cases[i].x = cases[i-1].x + 2*(env->window_width/(game_nb_rows(env->jeu)+2));
+        cases[i].y = cases[i-1].y;
 
         if(i%7 == 0) //retour à la ligne
         {
-            env->cases[i].x = (i%7 == 0) ? 0 : 100;
-            env->cases[i].y = env->cases[i-1].y + 100;
+            cases[i].x = (i%7 == 0) ? 0 : env->window_width/(game_nb_rows(env->jeu)+2);
+            cases[i].y = cases[i-1].y + env->window_width/(game_nb_rows(env->jeu)+2);
         }
-        env->cases[i].w = env->cases[i].h = 100; //taille d'une case : 100 x 100
+        cases[i].w = cases[i].h = env->window_width/(game_nb_rows(env->jeu)+2); //taille d'une case : 100 x 100
     }
-    if(SDL_RenderFillRects(ren,env->cases,(game_nb_rows(env->jeu)*game_nb_cols(env->jeu))) <0)//Remplissage des cases blanches
+    if(SDL_RenderFillRects(ren,cases,(game_nb_rows(env->jeu)*game_nb_cols(env->jeu))) <0)//Remplissage des cases blanches
     {
         printf("Erreur lors des remplissages de rectangles: %s",SDL_GetError());
         return ;
@@ -81,19 +79,19 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     env->ligne_depart.y = 0;
     for(int i = 0; i!=(game_nb_cols(env->jeu)+1); i++)
     {
-      env->ligne_depart.y += game_nb_cols(env->jeu);
-      env->ligne_arrivee.y = env->ligne_depart.y;
-      SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
+        env->ligne_depart.y += env->window_height/(game_nb_cols(env->jeu)+2);
+        env->ligne_arrivee.y = env->ligne_depart.y;
+        SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
     }
     // Lignes verticales
     env->ligne_depart.x = 0;
-    env->ligne_depart.y = env->window_width/(game_nb_rows(env->jeu)+2);
-    env->ligne_arrivee.y = (env->window_width/(game_nb_rows(env->jeu)+2))*(game_nb_cols(env->jeu)+1);
+    env->ligne_depart.y = env->window_height/(game_nb_rows(env->jeu)+2);
+    env->ligne_arrivee.y = (env->window_height/(game_nb_rows(env->jeu)+2))*(game_nb_cols(env->jeu)+1);
     for(int i = 0; i!=(game_nb_rows(env->jeu)+1); i++)
     {
-      env->ligne_depart.x += game_nb_rows(env->jeu);
-      env->ligne_arrivee.x = env->ligne_depart.x;
-      SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
+        env->ligne_depart.x += env->window_width/(game_nb_rows(env->jeu)+2);
+        env->ligne_arrivee.x = env->ligne_depart.x;
+        SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
     }
 }
 
