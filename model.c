@@ -75,24 +75,27 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);  // Couleur rouge
 
     // Lignes horizontales
-    env->ligne_depart.x = env->window_width / (game_nb_rows(env->jeu) + 2);
-    env->ligne_arrivee.x = (env->window_width / (game_nb_rows(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1);
-    env->ligne_depart.y = 0;
-    for (int i = 0; i != (game_nb_cols(env->jeu) + 1); i++)
+    env->ligne_depart.x = env->window_width / (game_nb_cols(env->jeu) + 2);
+    env->ligne_arrivee.x = (env->window_width / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1);
+    env->ligne_depart.y = env->window_height/(game_nb_cols(env->jeu)+2);
+    env->ligne_arrivee.y = env->window_height/(game_nb_cols(env->jeu)+2);
+    for (int i = 0; i != (game_nb_rows(env->jeu) + 1); i++)
     {
-        env->ligne_depart.y += env->window_height/(game_nb_cols(env->jeu)+2);
-        env->ligne_arrivee.y = env->ligne_depart.y;
         SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
+        env->ligne_depart.y += env->window_height/(game_nb_rows(env->jeu)+2);
+        env->ligne_arrivee.y = env->ligne_depart.y;
     }
     // Lignes verticales
-    env->ligne_depart.x = 0;
-    env->ligne_depart.y = env->window_height/(game_nb_rows(env->jeu)+2);
-    env->ligne_arrivee.y = (env->window_height/(game_nb_rows(env->jeu)+2))*(game_nb_cols(env->jeu)+1);
-    for(int i = 0; i!=(game_nb_rows(env->jeu)+1); i++)
+    env->ligne_depart.x = env->window_width/(game_nb_cols(env->jeu)+2); 
+    env->ligne_arrivee.x = env->window_width/(game_nb_cols(env->jeu)+2);
+    env->ligne_depart.y = env->window_height/(game_nb_cols(env->jeu)+2);
+    env->ligne_arrivee.y = (env->window_height/(game_nb_rows(env->jeu)+2))*(game_nb_rows(env->jeu)+1);
+    for(int i = 0; i!=(game_nb_cols(env->jeu)+1); i++)
     {
-        env->ligne_depart.x += env->window_width/(game_nb_rows(env->jeu)+2);
-        env->ligne_arrivee.x = env->ligne_depart.x;
         SDL_RenderDrawLine(ren,env->ligne_depart.x, env->ligne_depart.y,env->ligne_arrivee.x,env->ligne_arrivee.y);
+        env->ligne_depart.x += env->window_width/(game_nb_cols(env->jeu)+2);
+        env->ligne_arrivee.x = env->ligne_depart.x;
+        
     }
 }
 
