@@ -84,6 +84,9 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     // Lignes horizontales
     env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2);
     env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1);
+    int centrage = (env->window_width -(env->ligne_depart.x+env->ligne_arrivee.x))/2;
+    env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2)+centrage;
+    env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1)+centrage;
     env->ligne_depart.y = size/(game_nb_rows(env->jeu)+2);
     env->ligne_arrivee.y = size/(game_nb_rows(env->jeu)+2);
     for (int i = 0; i != (game_nb_rows(env->jeu) + 1); i++)
@@ -93,8 +96,8 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         env->ligne_arrivee.y = env->ligne_depart.y;
     }
     // Lignes verticales
-    env->ligne_depart.x = size/(game_nb_cols(env->jeu)+2); 
-    env->ligne_arrivee.x = size/(game_nb_cols(env->jeu)+2);
+    env->ligne_depart.x = size/(game_nb_cols(env->jeu)+2)+centrage; 
+    env->ligne_arrivee.x = size/(game_nb_cols(env->jeu)+2)+centrage;
     env->ligne_depart.y = size/(game_nb_rows(env->jeu)+2);
     env->ligne_arrivee.y = (size / (game_nb_rows(env->jeu) + 2)) * (game_nb_rows(env->jeu) + 1);
     for(int i = 0; i!=(game_nb_cols(env->jeu)+1); i++)
