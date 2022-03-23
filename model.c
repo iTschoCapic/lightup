@@ -149,12 +149,12 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
             // We find the coordinates (i,j) of the case in which we clicked
             int case_i = -1;
             int case_j = -1;
-            int k = grid.y;
+            int k = grid_y;
             while((k < mouse.y) && (k < grid_y+grid_h)){
                 case_i++;
                 k += grid_h;
             }
-            k = grid.x;
+            k = grid_x;
             while((k < mouse.x) && (k < grid_x+grid_w)){
                 case_j++;
                 k += grid_w;
