@@ -140,22 +140,40 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
     {
         SDL_Point mouse;
         Uint32 button = SDL_GetMouseState(&mouse.x, &mouse.y);
-        int case_i = 0;
-        int case_j = 0;
-        if ((e->button.button) == 1)
-        {
-            if (game_check_move(env->jeu, case_i, case_j, S_LIGHTBULB))
-            {
-                game_play_move(env->jeu, case_i, case_j, S_LIGHTBULB);
+        int grid_x = env->cases[0].x;
+        int grid_y = env->cases[0].y;
+        int grid_w = env->cases[0].w;
+        int grid_h = env->cases[0].h;
+        // We first check if the click is in the game grid
+        if(mouse.x > grid_x && mouse.x < (grid_x)+(grid_w) && mouse.y > grid_y && mouse.y < (grid_y)+(grid_h)){
+            // We find the coordinates (i,j) of the case in which we clicked
+            int case_i = -1;
+            int case_j = -1;
+            int k = grid.y;
+            while((k < mouse.y) && (k < grid_y+grid_h)){
+                case_i++;
+                k += grid_h;
             }
-        }
-        else if ((e->button.button) == 1)
-        {
-            if (game_check_move(env->jeu, case_i, case_j, S_MARK))
-            {
-                game_play_move(env->jeu, case_i, case_j, S_MARK);
+            k = grid.x;
+            while((k < mouse.x) && (k < grid_x+grid_w)){
+                case_j++;
+                k += grid_w;
             }
-        }
+            if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
+            {
+                if (game_check_move(env->jeu, case_i, case_j, S_LIGHTBULB))
+                {
+                    game_play_move(env->jeu, case_i, case_j, S_LIGHTBULB);
+                }
+            }
+            else if ((e->button.button) == SDL_BUTTON_RIGHT)    // If right click then mark
+            {
+                if (game_check_move(env->jeu, case_i, case_j, S_MARK))
+                {
+                    game_play_move(env->jeu, case_i, case_j, S_MARK);
+                }
+            }
+        }        
     }
     else if (e->type == SDL_KEYDOWN)
     {
