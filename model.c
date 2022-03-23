@@ -113,6 +113,50 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         env->ligne_arrivee.x = env->ligne_depart.x;
         
     }
+    /*Creation des boutons*/
+    int button_size = (size/5)*0.8;
+    int button_height = env->ligne_depart.y/2;
+    int space = (size/5)*0.1;
+    int first_last_space = (size/5)*0.25;
+    int ligne = 2;
+
+    for (int r = 0; r < 5; r++){
+        if (r == 0 || r == 4){
+            for (int i = 0; i < ligne; i++){
+                int x_depart = first_last_space + r * button_size + r * space;
+                int x_arrivee = x_depart + button_size;
+                int y_depart = button_height + i * (button_height/2);
+                int y_arrivee = y_depart;
+                SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee, y_arrivee);
+                if (i == 0){
+                    int x_arrivee_2 = x_depart;
+                    int y_arrivee_2 = y_depart + button_height/2;
+                    SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee_2, y_arrivee_2);
+                    int x_depart_2 = x_arrivee;
+                    y_arrivee_2 = y_depart + button_height/2;
+                    SDL_RenderDrawLine(ren, x_depart_2, y_depart, x_arrivee, y_arrivee_2);
+                }
+            }
+        }
+        else{
+            for (int i = 0; i < ligne; i++){
+                int x_depart = first_last_space + r * button_size + r * space;
+                int x_arrivee = x_depart + button_size;
+                int y_depart = button_height + i * (button_height/2);
+                int y_arrivee = y_depart;
+                SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee, y_arrivee);
+                if (i == 0){
+                    int x_arrivee_2 = x_depart;
+                    int y_arrivee_2 = y_depart + button_height/2;
+                    SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee_2, y_arrivee_2);
+                    int x_depart_2 = x_arrivee;
+                    y_arrivee_2 = y_depart + button_height/2;
+                    SDL_RenderDrawLine(ren, x_depart_2, y_depart, x_arrivee, y_arrivee_2);
+                }
+
+            }
+        }
+    }
 }
 
 /* **************************************************************** */
