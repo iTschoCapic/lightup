@@ -26,6 +26,7 @@ struct Env_t
     SDL_Texture *lamp;
     SDL_Texture *mark;
     SDL_Texture *title;
+    SDL_Rect *cases;
     game jeu;
     int window_width , window_height ;
     SDL_Point ligne_depart,ligne_arrivee;
@@ -40,6 +41,7 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     SDL_GetWindowSize(win, &env->window_width , &env->window_height);
     env->ligne_depart.x = env->window_width/(game_nb_rows(env->jeu)+2);
     env->ligne_depart.y = env->window_height/(game_nb_cols(env->jeu)+2);
+    env->cases = malloc(sizeof(SDL_Rect)*game_nb_rows(env->jeu)*(game_nb_cols(env->jeu)));
     return env;
 }
 
@@ -47,32 +49,10 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
 
 void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
 {
+    SDL_SetRenderDrawColor(ren,120,120,120,255);
+    SDL_RenderClear(ren);
+    SDL_SetRenderDrawColor(ren,255,255,255,255);
     SDL_GetWindowSize(win, &env->window_width , &env->window_height);
-    SDL_Rect cases[game_nb_rows(env->jeu)*game_nb_cols(env->jeu)];
-    cases[0].x = cases[0].y = 0;
-    cases[0].w = cases[0].h = env->window_width/(game_nb_rows(env->jeu)+2);
-    for(int i = 1; i != (game_nb_rows(env->jeu)*game_nb_cols(env->jeu)); i++)
-    {
-        cases[i].x = cases[i-1].x + 2*(env->window_width/(game_nb_rows(env->jeu)+2));
-        cases[i].y = cases[i-1].y;
-
-        if (i % 7 == 0)  // retour à la ligne
-        {
-            cases[i].x = (i%7 == 0) ? 0 : env->window_width/(game_nb_rows(env->jeu)+2);
-            cases[i].y = cases[i-1].y + env->window_width/(game_nb_rows(env->jeu)+2);
-        }
-        cases[i].w = cases[i].h = env->window_width/(game_nb_rows(env->jeu)+2); //taille d'une case : 100 x 100
-    }
-    if(SDL_RenderFillRects(ren,cases,(game_nb_rows(env->jeu)*game_nb_cols(env->jeu))) <0)//Remplissage des cases blanches
-    {
-        printf("Erreur lors des remplissages de rectangles: %s", SDL_GetError());
-        return;
-    }
-    // À présent, occupons nous des lignes
-    // On ne peut pas utiliser la fonction SDL_RenderDrawLines
-    // car celle-ci ne permet pas de créer des lignes indépendantes comme nous voulons le faire mais des chemins
-
-    SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);  // Couleur rouge
     int size = 0;
     if(env->window_height < env->window_width){
         size = env->window_height;
@@ -81,10 +61,34 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     {
         size = env->window_width;
     }
-    // Lignes horizontales
     env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2);
     env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1);
     int centrage = (env->window_width -(env->ligne_depart.x+env->ligne_arrivee.x))/2;
+
+    //creation des cases 
+    env->cases[0].x = size / (game_nb_cols(env->jeu) + 2)+centrage;
+    env->cases[0].y = size/(game_nb_rows(env->jeu)+2);
+    env->cases[0].w = size/(game_nb_cols(env->jeu)+2);
+    env->cases[0].h = size/(game_nb_rows(env->jeu)+2);
+    for(int i = 1; i != (game_nb_rows(env->jeu)*game_nb_cols(env->jeu)); i++)
+    {
+        env->cases[i].x = env->cases[i-1].x + env->cases[i-1].w;
+        env->cases[i].y = env->cases[i-1].y;
+
+        if (i % game_nb_cols(env->jeu) == 0)  // retour à la ligne
+        {
+            env->cases[i].x = size / (game_nb_cols(env->jeu) + 2)+centrage;
+            env->cases[i].y = env->cases[i-1].y + env->cases[0].h;
+        }
+    }
+    if(SDL_RenderFillRects(ren,env->cases,(game_nb_rows(env->jeu)*game_nb_cols(env->jeu))) <0)//Remplissage des cases blanches
+    {
+        printf("Erreur lors des remplissages de rectangles: %s", SDL_GetError());
+        return;
+    }
+   
+    SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);  // Couleur rouge
+    // Lignes horizontales
     env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2)+centrage;
     env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1)+centrage;
     env->ligne_depart.y = size/(game_nb_rows(env->jeu)+2);
