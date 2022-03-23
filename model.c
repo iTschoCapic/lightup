@@ -75,13 +75,15 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         env->cases[i].x = env->cases[i-1].x + env->cases[i-1].w;
         env->cases[i].y = env->cases[i-1].y;
 
-        if (i % game_nb_cols(env->jeu) == 0)  // retour à la ligne
+        if (i % game_nb_rows(env->jeu) == 0)  // retour à la ligne
         {
-            env->cases[i].x = size / (game_nb_cols(env->jeu) + 2)+centrage;
+            env->cases[i].x = env->cases[0].x;
             env->cases[i].y = env->cases[i-1].y + env->cases[0].h;
         }
+        env->cases[i].w = env->cases[0].w;
+        env->cases[i].h = env->cases[0].h; 
     }
-    if(SDL_RenderFillRects(ren,env->cases,(game_nb_rows(env->jeu)*game_nb_cols(env->jeu))) <0)//Remplissage des cases blanches
+    if(SDL_RenderFillRects(ren,env->cases,game_nb_rows(env->jeu)*(game_nb_cols(env->jeu)))<0)//Remplissage des cases blanches
     {
         printf("Erreur lors des remplissages de rectangles: %s", SDL_GetError());
         return;
