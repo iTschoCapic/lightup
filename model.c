@@ -37,7 +37,12 @@ struct Env_t
 Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
 {
     Env *env = malloc(sizeof(struct Env_t));
-    env->jeu = game_load(argv[1]);
+    if(argv[1] != NULL){
+        env->jeu = game_load(argv[1]);
+    }
+    else{
+        env->jeu = game_load("../games/default");
+    }
     SDL_GetWindowSize(win, &env->window_width , &env->window_height);
     env->ligne_depart.x = env->window_width/(game_nb_rows(env->jeu)+2);
     env->ligne_depart.y = env->window_height/(game_nb_cols(env->jeu)+2);
