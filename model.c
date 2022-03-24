@@ -13,16 +13,21 @@
 
 /* **************************************************************** */
 
-#define FONT "arial.ttf"
+#define FONT "textures/arial.ttf"
 #define FONTSIZE 36
-#define BACKGROUND "background.png"
-#define MARIO "mario.png"
+#define BACKGROUND "textures/background.png"
+#define MARIO "textures/mario.png"
 
 struct Env_t
 {
     /* PUT YOUR VARIABLES HERE */
     SDL_Texture *background;
     SDL_Texture *wall;
+    SDL_Texture *wall0;
+    SDL_Texture *wall1;
+    SDL_Texture *wall2;
+    SDL_Texture *wall3;
+    SDL_Texture *wall4;
     SDL_Texture *lamp;
     SDL_Texture *mark;
     SDL_Texture *title;
@@ -42,6 +47,20 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     env->ligne_depart.x = env->window_width / (game_nb_rows(env->jeu) + 2);
     env->ligne_depart.y = env->window_height / (game_nb_cols(env->jeu) + 2);
     env->cases = malloc(sizeof(SDL_Rect) * game_nb_rows(env->jeu) * (game_nb_cols(env->jeu)));
+    // env->wall = malloc(5 * sizeof(SDL_Texture));
+
+    env->wall0 = IMG_LoadTexture(ren, "textures/0.png");
+    if (!env->wall0) ERROR("IMG_LoadTexture: %s\n", "textures/0.png");
+    env->wall1 = IMG_LoadTexture(ren, "textures/1.png");
+    if (!env->wall1) ERROR("IMG_LoadTexture: %s\n", "textures/1.png");
+    env->wall2 = IMG_LoadTexture(ren, "textures/2.png");
+    if (!env->wall2) ERROR("IMG_LoadTexture: %s\n", "textures/2.png");
+    env->wall3 = IMG_LoadTexture(ren, "textures/3.png");
+    if (!env->wall3) ERROR("IMG_LoadTexture: %s\n", "textures/3.png");
+    env->wall4 = IMG_LoadTexture(ren, "textures/4.png");
+    if (!env->wall4) ERROR("IMG_LoadTexture: %s\n", "textures/4.png");
+    env->lamp = IMG_LoadTexture(ren, MARIO);
+    if (!env->lamp) ERROR("IMG_LoadTexture: %s\n", MARIO);
     return env;
 }
 
@@ -90,22 +109,60 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     {
         for (int j = 0; j < game_nb_cols(env->jeu); j++)
         {
+            int case_nb = game_nb_cols(env->jeu) * i + j;
+            int black_nb = -1;
             square state = game_get_state(env->jeu, i, j);
-            if (state == S_LIGHTBULB)
+            square flags = game_get_flags(env->jeu, i, j);
+            if (game_is_black(env->jeu, i, j))
             {
-                SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
-                // printf("hello\n");
-            }
-            else if (state == S_MARK)
-            {
-                SDL_SetRenderDrawColor(ren, 0, 0, 120, 255);
-                // printf("z\n");
+                SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+                SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                black_nb = game_get_black_number(env->jeu, i, j);
+                switch (black_nb)
+                {
+                    case -1:
+                        break;
+                    case 0:
+                        SDL_RenderCopy(ren, env->wall0, NULL, &(env->cases[case_nb]));
+                        break;
+                    case 1:
+                        SDL_RenderCopy(ren, env->wall1, NULL, &(env->cases[case_nb]));
+                        break;
+                    case 2:
+                        SDL_RenderCopy(ren, env->wall2, NULL, &(env->cases[case_nb]));
+                        break;
+                    case 3:
+                        SDL_RenderCopy(ren, env->wall3, NULL, &(env->cases[case_nb]));
+                        break;
+                    case 4:
+                        SDL_RenderCopy(ren, env->wall4, NULL, &(env->cases[case_nb]));
+                        break;
+                }
             }
             else
             {
-                SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+                if (state == S_LIGHTBULB)
+                {
+                    SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
+                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                    SDL_RenderCopy(ren, env->lamp, NULL, &(env->cases[case_nb]));
+                }
+                else if (state == S_MARK)
+                {
+                    SDL_SetRenderDrawColor(ren, 0, 0, 120, 255);
+                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                }
+                else if (game_is_lighted(env->jeu, i, j))
+                {
+                    SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
+                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                }
+                else
+                {
+                    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                }
             }
-            SDL_RenderFillRect(ren, &(env->cases[game_nb_cols(env->jeu) * i + j]));
         }
     }
     /*if(SDL_RenderFillRects(ren,env->cases,(game_nb_rows(env->jeu)*game_nb_cols(env->jeu))) <0)//Remplissage des cases blanches
@@ -250,20 +307,21 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
                 case_j++;
                 k += grid_w;
             }
-            printf("%d %d\n", case_i, case_j);
             if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
             {
-                if (game_check_move(env->jeu, case_i, case_j, S_LIGHTBULB))
-                {
+                square state = game_get_state(env->jeu, case_i, case_j);
+                if (state == S_LIGHTBULB)
+                    game_play_move(env->jeu, case_i, case_j, S_BLANK);
+                else if (state == S_BLANK)
                     game_play_move(env->jeu, case_i, case_j, S_LIGHTBULB);
-                }
             }
             else if ((e->button.button) == SDL_BUTTON_RIGHT)  // If right click then mark
             {
-                if (game_check_move(env->jeu, case_i, case_j, S_MARK))
-                {
+                square state = game_get_state(env->jeu, case_i, case_j);
+                if (state == S_MARK)
+                    game_play_move(env->jeu, case_i, case_j, S_BLANK);
+                else if (state == S_BLANK)
                     game_play_move(env->jeu, case_i, case_j, S_MARK);
-                }
             }
         }
         else if (mouse.x > button1_pos_x_start + button1_pos_y_start && mouse.x < button1_pos_x_end + button1_pos_y_end)
