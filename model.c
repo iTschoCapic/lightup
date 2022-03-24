@@ -119,41 +119,29 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     int space = (size/5)*0.1;
     int first_last_space = (size/5)*0.25;
     int ligne = 2;
+    SDL_Rect rect;
 
     for (int r = 0; r < 5; r++){
-        if (r == 0 || r == 4){
-            for (int i = 0; i < ligne; i++){
-                int x_depart = first_last_space + r * button_size + r * space;
-                int x_arrivee = x_depart + button_size;
-                int y_depart = button_height + i * (button_height/2);
-                int y_arrivee = y_depart;
-                SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee, y_arrivee);
-                if (i == 0){
-                    int x_arrivee_2 = x_depart;
-                    int y_arrivee_2 = y_depart + button_height/2;
-                    SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee_2, y_arrivee_2);
-                    int x_depart_2 = x_arrivee;
-                    y_arrivee_2 = y_depart + button_height/2;
-                    SDL_RenderDrawLine(ren, x_depart_2, y_depart, x_arrivee, y_arrivee_2);
-                }
-            }
-        }
-        else{
-            for (int i = 0; i < ligne; i++){
-                int x_depart = first_last_space + r * button_size + r * space;
-                int x_arrivee = x_depart + button_size;
-                int y_depart = button_height + i * (button_height/2);
-                int y_arrivee = y_depart;
-                SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee, y_arrivee);
-                if (i == 0){
-                    int x_arrivee_2 = x_depart;
-                    int y_arrivee_2 = y_depart + button_height/2;
-                    SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee_2, y_arrivee_2);
-                    int x_depart_2 = x_arrivee;
-                    y_arrivee_2 = y_depart + button_height/2;
-                    SDL_RenderDrawLine(ren, x_depart_2, y_depart, x_arrivee, y_arrivee_2);
-                }
-
+        for (int i = 0; i < ligne; i++){
+            int x_depart = first_last_space + r * button_size + r * space + centrage;
+            int x_arrivee = x_depart + button_size;
+            int y_depart = button_height + i * (button_height/2);
+            int y_arrivee = y_depart;
+            SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee, y_arrivee);
+            if (i == 0){
+                rect.x = x_depart;
+                rect.y = y_depart;
+                int x_arrivee_2 = x_depart;
+                int y_arrivee_2 = y_depart + button_height/2;
+                SDL_RenderDrawLine(ren, x_depart, y_depart, x_arrivee_2, y_arrivee_2);
+                int x_depart_2 = x_arrivee;
+                y_arrivee_2 = y_depart + button_height/2;
+                SDL_RenderDrawLine(ren, x_depart_2, y_depart, x_arrivee, y_arrivee_2);
+                rect.w = button_size;
+                rect.h = button_height/2;
+                SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+                SDL_RenderFillRect(ren, &rect);
+                SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
             }
         }
     }
@@ -188,6 +176,35 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
         int grid_y = env->cases[0].y;
         int grid_w = env->cases[0].w;
         int grid_h = env->cases[0].h;
+
+        /*I had to copy the following to check if our click is in a button or not. In order to do this, I needed some measurements such as the size of the window and the size of the button.*/
+        int size;
+        if(env->window_height < env->window_width){
+            size = env->window_height;
+        }
+        else
+        {
+            size = env->window_width;
+        }
+        int centrage = (env->window_width -(env->ligne_depart.x+env->ligne_arrivee.x))/2;
+        int button_size = (size/5)*0.8;
+        int button_height = env->ligne_depart.y/2;
+        int space = (size/5)*0.1;
+        int first_last_space = (size/5)*0.25;
+        int button1_pos_x_start = first_last_space + centrage;
+        int button1_pos_x_end = button1_pos_x_start + button_size;
+        int button1_pos_y_start = button_height;
+        int button1_pos_y_end = button1_pos_y_start + (button_height/2);
+        int button2_start = button1_pos_x_end + space;
+        int button2_end = (button1_pos_x_end + button1_pos_y_end) + space + button_size;
+        int button3_start = button2_start + space + button_size;
+        int button3_end = button2_end + space + button_size;
+        int button4_start = button3_start + space + button_size;
+        int button4_end = button3_end + space + button_size;
+        int button5_start = button4_start + space + button_size;
+        int button5_end = button4_end + space + button_size;
+        
+
         // We first check if the click is in the game grid
         if(mouse.x > grid_x && mouse.x < (grid_x)+(grid_w) && mouse.y > grid_y && mouse.y < (grid_y)+(grid_h)){
             // We find the coordinates (i,j) of the case in which we clicked
@@ -217,7 +234,22 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
                     game_play_move(env->jeu, case_i, case_j, S_MARK);
                 }
             }
-        }        
+        }else if (mouse.x > button1_pos_x_start+button1_pos_y_start && mouse.x < button1_pos_x_end+button1_pos_y_end){
+            printf("Restart");
+            game_restart(env->jeu);
+        }else if (mouse.x > button2_start && mouse.x < button2_end){
+            printf("Solve");
+            game_solve(env->jeu);
+        }else if (mouse.x > button3_start && mouse.x < button3_end){
+            printf("Undo");
+            game_undo(env->jeu);
+        }else if (mouse.x > button4_start && mouse.x < button4_end){
+            printf("Redo");
+            game_redo(env->jeu);
+        }else if (mouse.x > button5_start && mouse.x < button5_end){
+            printf("Help");
+            //game_help();
+        }
     }
     else if (e->type == SDL_KEYDOWN)
     {
