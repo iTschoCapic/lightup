@@ -47,7 +47,7 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
         env->jeu = game_load(argv[1]);
     }
     else{
-        env->jeu = game_load("../games/default");
+        env->jeu = game_load("../games/default.txt");
     }
     SDL_GetWindowSize(win, &env->window_width, &env->window_height);
     env->ligne_depart.x = env->window_width / (game_nb_rows(env->jeu) + 2);
