@@ -27,6 +27,8 @@
 #define REDO "textures/redo.png"
 #define HELP "textures/help.png"
 #define SAVE "textures/save.png"
+#define HELP_PANEL "textures/help_panel.png"
+#define CREDITS "textures/credits.png"
 
 struct Env_t
 {
@@ -58,6 +60,9 @@ struct Env_t
     SDL_Texture *mark;
     SDL_Texture *lighted;  // lighted flag
     SDL_Texture *title;
+    SDL_Texture *help_panel;
+    SDL_Texture *credits;
+    bool toggle_help;
     SDL_Rect *cases;
     SDL_Rect *buttons;
     game jeu;
@@ -137,6 +142,11 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
 
     env->title = IMG_LoadTexture(ren, TITLE);
     if (!env->title) ERROR("IMG_LoadTexture: %s\n", TITLE);
+    env->help_panel = IMG_LoadTexture(ren, HELP_PANEL);
+    if (!env->help_panel) ERROR("IMG_LoadTexture: %s\n", HELP_PANEL);
+    env->toggle_help = false;
+    env->credits = IMG_LoadTexture(ren, CREDITS);
+    if (!env->credits) ERROR("IMG_LoadTexture: %s\n", CREDITS);
 
     return env;
 }
@@ -175,7 +185,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         env->cases[i].x = env->cases[i - 1].x + env->cases[i - 1].w;
         env->cases[i].y = env->cases[i - 1].y;
 
-        if (i % game_nb_rows(env->jeu) == 0)  // retour à la ligne
+        if (i % game_nb_cols(env->jeu) == 0)  // retour à la ligne
         {
             env->cases[i].x = env->cases[0].x;
             env->cases[i].y = env->cases[i - 1].y + env->cases[0].h;
@@ -261,7 +271,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         }
     }
 
-    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);  // Couleur rouge
+    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);  // Lignes en blanc
     // Lignes horizontales
     env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2) + centrage;
     env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1) + centrage;
@@ -288,19 +298,6 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     int button_size = (size / 6) * 0.8;
     int button_height = env->ligne_depart.y / 2;
     int space = (size / 6) * 0.1;
-    /*int first_last_space = (size / 6) * 0.25;
-
-    for (int r = 0; r < 6; r++)
-    {
-        env->buttons[r].x = first_last_space + centrage + r * space + r * button_size;
-        env->buttons[r].y = button_height;
-        env->buttons[r].h = button_height / 2;
-        env->buttons[r].w = button_size;
-        SDL_RenderDrawRect(ren, &(env->buttons[r]));
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-        SDL_RenderFillRect(ren, &(env->buttons[r]));
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-    }*/
 
     env->buttons[0].h = button_height / 2;
     env->buttons[0].w = button_size;
@@ -333,12 +330,34 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         }
     }
 
-    // Placement du texte
+    // Placement du titre
     rect.h = env->cases[0].y * 0.7;
     rect.w = rect.h * 4;
     rect.x = w / 2 - rect.w / 2;
     rect.y = 0;
     SDL_RenderCopy(ren, env->title, NULL, &rect);
+
+    // Placement des crédits
+    rect.h = env->cases[0].h / 2;
+    rect.w = rect.h * 9;
+    rect.x = w / 2 - rect.w / 2;
+    rect.y = env->ligne_arrivee.y + 3;
+    SDL_RenderCopy(ren, env->credits, NULL, &rect);
+
+    // Placement du panneau d'aide
+    if (env->toggle_help)
+    {
+        rect.y = env->cases[0].y;
+        rect.h = h - rect.y;
+        rect.w = 2 * rect.h / 3;
+        rect.x = w - rect.w;
+        if (rect.x < 0)
+        {
+            rect.x = 0;
+            rect.w = w;
+        }
+        SDL_RenderCopy(ren, env->help_panel, NULL, &rect);
+    }
 }
 
 /* **************************************************************** */
@@ -368,34 +387,6 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
         int grid_y = env->cases[0].y;
         int grid_w = env->cases[0].w;
         int grid_h = env->cases[0].h;
-
-        /*I had to copy the following to check if our click is in a button or not. In order to do this, I needed some measurements such as the size of the window and the size of the button.*/
-        int size = 0;
-        if (env->window_height < env->window_width)
-        {
-            size = env->window_height;
-        }
-        else
-        {
-            size = env->window_width;
-        }
-
-        // printf("%d %d %d\n", (env->buttons[0]),(env->buttons[4]), mouse.x);
-
-        /*int button1_pos_x_start = first_last_space + centrage;
-        int button1_pos_x_end = button1_pos_x_start + button_size;
-        int button1_pos_y_start = button_height;
-        int button1_pos_y_end = button1_pos_y_start + (button_height/2);
-
-        int button2_pos_x_start = button1_pos_x_end + space;
-        int button2_pos_x_end = (button1_pos_x_end + button1_pos_y_end) + space + button_size;
-
-        int button3_pos_x_start = button2_start + space + button_size;
-        int button3_pos_x_end = button2_end + space + button_size;
-        int button4_pos_x_start = button3_start + space + button_size;
-        int button4_pos_x_end = button3_end + space + button_size;
-        int button5_pos_x_start = button4_start + space + button_size;
-        int button5_pos_x_end = button4_end + space + button_size;*/
 
         // We first check if the click is in the game grid
         if (mouse.x > grid_x && mouse.x < (grid_x) + (game_nb_cols(env->jeu)) * (grid_w) && mouse.y > grid_y && mouse.y < (grid_y) + (game_nb_rows(env->jeu)) * (grid_h))
@@ -434,24 +425,22 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
         }
 
         else if (SDL_PointInRect(&mouse, &(env->buttons[0])))
-        {
-            printf("Restart");
             game_restart(env->jeu);
-        } /*else if (mouse.x > button2_start && mouse.x < (button2_start + button_size) && mouse.y > button2_start+(button_height/2) && mouse.y < (button2_start + button_size + (button_height/2))){
-            printf("Solve");
+
+        else if (SDL_PointInRect(&mouse, &(env->buttons[1])))
             game_solve(env->jeu);
-        }else if (mouse.x > button3_start && mouse.x < button3_end){
-            printf("Undo");
+
+        else if (SDL_PointInRect(&mouse, &(env->buttons[2])))
             game_undo(env->jeu);
-        }else if (mouse.x > button4_start && mouse.x < button4_end){
-            printf("Redo");
+
+        else if (SDL_PointInRect(&mouse, &(env->buttons[3])))
             game_redo(env->jeu);
-        }*/
+
         else if (SDL_PointInRect(&mouse, &(env->buttons[4])))
-        {
-            printf("Help");
-            // game_help();
-        }
+            game_save(env->jeu, "game");
+
+        else if (SDL_PointInRect(&mouse, &(env->buttons[5])))
+            env->toggle_help = !(env->toggle_help);
     }
     else if (e->type == SDL_KEYDOWN)
     {
