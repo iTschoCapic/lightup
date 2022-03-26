@@ -15,21 +15,31 @@
 
 #define FONT "textures/arial.ttf"
 #define FONTSIZE 36
-#define BACKGROUND "textures/background.png"
-#define MARIO "textures/mario.png"
+#define BACKGROUND "textures/mansion.png"
+#define BOO "textures/boo.png"
+#define SHYBOO "textures/shyboo.png"
+#define LUIGI "textures/luigi.png"
+#define MIST "textures/mist.png"
 
 struct Env_t
 {
     /* PUT YOUR VARIABLES HERE */
     SDL_Texture *background;
-    SDL_Texture *wall;
+    SDL_Texture *wallU;
     SDL_Texture *wall0;
     SDL_Texture *wall1;
     SDL_Texture *wall2;
     SDL_Texture *wall3;
     SDL_Texture *wall4;
+    SDL_Texture *wall0r;
+    SDL_Texture *wall1r;
+    SDL_Texture *wall2r;
+    SDL_Texture *wall3r;
+    SDL_Texture *wall4r;
     SDL_Texture *lamp;
+    SDL_Texture *lamp_error;
     SDL_Texture *mark;
+    SDL_Texture *lighted;
     SDL_Texture *title;
     SDL_Rect *cases;
     SDL_Rect *buttons;
@@ -58,18 +68,42 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     env->buttons = malloc(sizeof(SDL_Rect) * 6);
     // env->wall = malloc(5 * sizeof(SDL_Texture));
 
-    env->wall0 = IMG_LoadTexture(ren, "textures/0.png");
-    if (!env->wall0) ERROR("IMG_LoadTexture: %s\n", "textures/0.png");
-    env->wall1 = IMG_LoadTexture(ren, "textures/1.png");
-    if (!env->wall1) ERROR("IMG_LoadTexture: %s\n", "textures/1.png");
-    env->wall2 = IMG_LoadTexture(ren, "textures/2.png");
-    if (!env->wall2) ERROR("IMG_LoadTexture: %s\n", "textures/2.png");
-    env->wall3 = IMG_LoadTexture(ren, "textures/3.png");
-    if (!env->wall3) ERROR("IMG_LoadTexture: %s\n", "textures/3.png");
-    env->wall4 = IMG_LoadTexture(ren, "textures/4.png");
-    if (!env->wall4) ERROR("IMG_LoadTexture: %s\n", "textures/4.png");
-    env->lamp = IMG_LoadTexture(ren, MARIO);
-    if (!env->lamp) ERROR("IMG_LoadTexture: %s\n", MARIO);
+    env->background = IMG_LoadTexture(ren, BACKGROUND);
+    if (!env->background) ERROR("IMG_LoadTexture: %s\n", BACKGROUND);
+
+    env->wallU = IMG_LoadTexture(ren, "textures/blockU.png");
+    if (!env->wallU) ERROR("IMG_LoadTexture: %s\n", "textures/blockU.png");
+
+    env->wall0 = IMG_LoadTexture(ren, "textures/block0.png");
+    if (!env->wall0) ERROR("IMG_LoadTexture: %s\n", "textures/block0.png");
+    env->wall1 = IMG_LoadTexture(ren, "textures/block1.png");
+    if (!env->wall1) ERROR("IMG_LoadTexture: %s\n", "textures/block1.png");
+    env->wall2 = IMG_LoadTexture(ren, "textures/block2.png");
+    if (!env->wall2) ERROR("IMG_LoadTexture: %s\n", "textures/block2.png");
+    env->wall3 = IMG_LoadTexture(ren, "textures/block3.png");
+    if (!env->wall3) ERROR("IMG_LoadTexture: %s\n", "textures/block3.png");
+    env->wall4 = IMG_LoadTexture(ren, "textures/block4.png");
+    if (!env->wall4) ERROR("IMG_LoadTexture: %s\n", "textures/block4.png");
+
+    env->wall0r = IMG_LoadTexture(ren, "textures/block0.png");
+    if (!env->wall0r) ERROR("IMG_LoadTexture: %s\n", "textures/block0r.png");
+    env->wall1r = IMG_LoadTexture(ren, "textures/block1r.png");
+    if (!env->wall1r) ERROR("IMG_LoadTexture: %s\n", "textures/block1r.png");
+    env->wall2r = IMG_LoadTexture(ren, "textures/block2r.png");
+    if (!env->wall2r) ERROR("IMG_LoadTexture: %s\n", "textures/block2r.png");
+    env->wall3r = IMG_LoadTexture(ren, "textures/block3r.png");
+    if (!env->wall3r) ERROR("IMG_LoadTexture: %s\n", "textures/block3r.png");
+    env->wall4r = IMG_LoadTexture(ren, "textures/block4r.png");
+    if (!env->wall4r) ERROR("IMG_LoadTexture: %s\n", "textures/block4r.png");
+
+    env->lamp = IMG_LoadTexture(ren, BOO);
+    if (!env->lamp) ERROR("IMG_LoadTexture: %s\n", BOO);
+    env->lamp_error = IMG_LoadTexture(ren, SHYBOO);
+    if (!env->lamp_error) ERROR("IMG_LoadTexture: %s\n", SHYBOO);
+    env->lighted = IMG_LoadTexture(ren, MIST);
+    if (!env->lighted) ERROR("IMG_LoadTexture: %s\n", MIST);
+    env->mark = IMG_LoadTexture(ren, LUIGI);
+    if (!env->mark) ERROR("IMG_LoadTexture: %s\n", LUIGI);
     return env;
 }
 
@@ -77,8 +111,9 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
 
 void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
 {
-    SDL_SetRenderDrawColor(ren, 120, 120, 120, 255);
-    SDL_RenderClear(ren);
+    /*SDL_SetRenderDrawColor(ren, 120, 120, 120, 255);
+    SDL_RenderClear(ren);*/
+    SDL_RenderCopy(ren, env->background, NULL, NULL);
     SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
     SDL_GetWindowSize(win, &env->window_width, &env->window_height);
     int size = 0;
@@ -91,12 +126,12 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         size = env->window_width;
     }
     env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2);
-    env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1);
+    env->ligne_arrivee.x = (env->ligne_depart.x) * (game_nb_cols(env->jeu) + 1);
     int centrage = (env->window_width - (env->ligne_depart.x + env->ligne_arrivee.x)) / 2;
 
     // creation des cases
     env->cases[0].x = size / (game_nb_cols(env->jeu) + 2) + centrage;
-    env->cases[0].y = size / (game_nb_rows(env->jeu) + 2);
+    env->cases[0].y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
     env->cases[0].w = size / (game_nb_cols(env->jeu) + 2);
     env->cases[0].h = size / (game_nb_rows(env->jeu) + 2);
     for (int i = 1; i != (game_nb_rows(env->jeu) * game_nb_cols(env->jeu)); i++)
@@ -119,66 +154,83 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
             int case_nb = game_nb_cols(env->jeu) * i + j;
             int black_nb = -1;
             square state = game_get_state(env->jeu, i, j);
-            square flags = game_get_flags(env->jeu, i, j);
+            // square flags = game_get_flags(env->jeu, i, j);
             if (game_is_black(env->jeu, i, j))
             {
-                SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-                SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                SDL_Texture *wall = env->wallU;
                 black_nb = game_get_black_number(env->jeu, i, j);
-                switch (black_nb)
+                if (!game_has_error(env->jeu, i, j))
                 {
-                    case -1:
-                        break;
-                    case 0:
-                        SDL_RenderCopy(ren, env->wall0, NULL, &(env->cases[case_nb]));
-                        break;
-                    case 1:
-                        SDL_RenderCopy(ren, env->wall1, NULL, &(env->cases[case_nb]));
-                        break;
-                    case 2:
-                        SDL_RenderCopy(ren, env->wall2, NULL, &(env->cases[case_nb]));
-                        break;
-                    case 3:
-                        SDL_RenderCopy(ren, env->wall3, NULL, &(env->cases[case_nb]));
-                        break;
-                    case 4:
-                        SDL_RenderCopy(ren, env->wall4, NULL, &(env->cases[case_nb]));
-                        break;
+                    switch (black_nb)
+                    {
+                        case -1:
+                            break;
+                        case 0:
+                            wall = env->wall0;
+                            break;
+                        case 1:
+                            wall = env->wall1;
+                            break;
+                        case 2:
+                            wall = env->wall2;
+                            break;
+                        case 3:
+                            wall = env->wall3;
+                            break;
+                        case 4:
+                            wall = env->wall4;
+                            break;
+                    }
                 }
+                else
+                {
+                    switch (black_nb)
+                    {
+                        case -1:
+                            break;
+                        case 0:
+                            wall = env->wall0r;
+                            break;
+                        case 1:
+                            wall = env->wall1r;
+                            break;
+                        case 2:
+                            wall = env->wall2r;
+                            break;
+                        case 3:
+                            wall = env->wall3r;
+                            break;
+                        case 4:
+                            wall = env->wall4r;
+                            break;
+                    }
+                }
+                SDL_RenderCopy(ren, wall, NULL, &(env->cases[case_nb]));
             }
             else
             {
                 if (state == S_LIGHTBULB)
                 {
-                    SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
-                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
-                    SDL_RenderCopy(ren, env->lamp, NULL, &(env->cases[case_nb]));
-                }
-                else if (state == S_MARK)
-                {
-                    SDL_SetRenderDrawColor(ren, 0, 0, 120, 255);
-                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
-                }
-                else if (game_is_lighted(env->jeu, i, j))
-                {
-                    SDL_SetRenderDrawColor(ren, 255, 255, 0, 255);
-                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                    if (game_has_error(env->jeu, i, j))
+                        SDL_RenderCopy(ren, env->lamp_error, NULL, &(env->cases[case_nb]));
+                    else
+                        SDL_RenderCopy(ren, env->lamp, NULL, &(env->cases[case_nb]));
                 }
                 else
                 {
-                    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-                    SDL_RenderFillRect(ren, &(env->cases[case_nb]));
+                    if (game_is_lighted(env->jeu, i, j)) SDL_RenderCopy(ren, env->lighted, NULL, &(env->cases[case_nb]));
+                    if (state == S_MARK) SDL_RenderCopy(ren, env->mark, NULL, &(env->cases[case_nb]));
                 }
             }
         }
     }
 
-    SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);  // Couleur rouge
+    SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);  // Couleur rouge
     // Lignes horizontales
     env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2) + centrage;
     env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1) + centrage;
-    env->ligne_depart.y = size / (game_nb_rows(env->jeu) + 2);
-    env->ligne_arrivee.y = size / (game_nb_rows(env->jeu) + 2);
+    env->ligne_depart.y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
+    env->ligne_arrivee.y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
     for (int i = 0; i != (game_nb_rows(env->jeu) + 1); i++)
     {
         SDL_RenderDrawLine(ren, env->ligne_depart.x, env->ligne_depart.y, env->ligne_arrivee.x, env->ligne_arrivee.y);
@@ -188,8 +240,8 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     // Lignes verticales
     env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2) + centrage;
     env->ligne_arrivee.x = size / (game_nb_cols(env->jeu) + 2) + centrage;
-    env->ligne_depart.y = size / (game_nb_rows(env->jeu) + 2);
-    env->ligne_arrivee.y = (size / (game_nb_rows(env->jeu) + 2)) * (game_nb_rows(env->jeu) + 1);
+    env->ligne_depart.y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
+    env->ligne_arrivee.y = (size / (game_nb_rows(env->jeu) + 2)) * (game_nb_rows(env->jeu) + 1) + env->cases[0].h / 2;
     for (int i = 0; i != (game_nb_cols(env->jeu) + 1); i++)
     {
         SDL_RenderDrawLine(ren, env->ligne_depart.x, env->ligne_depart.y, env->ligne_arrivee.x, env->ligne_arrivee.y);
@@ -244,7 +296,7 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
         int grid_h = env->cases[0].h;
 
         /*I had to copy the following to check if our click is in a button or not. In order to do this, I needed some measurements such as the size of the window and the size of the button.*/
-        int size;
+        int size = 0;
         if (env->window_height < env->window_width)
         {
             size = env->window_height;
