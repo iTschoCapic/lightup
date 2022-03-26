@@ -444,24 +444,30 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
     }
     else if (e->type == SDL_KEYDOWN)
     {
-        /*switch (e->key.keysym.sym)
+        switch (e->key.keysym.sym)
         {
-            case SDLK_LEFT:
-                env->bomb_x -= 10;
+            case SDLK_r:
+                game_restart(env->jeu);
                 break;
-            case SDLK_RIGHT:
-                env->bomb_x += 10;
+            case SDLK_q:
+                game_solve(env->jeu);
                 break;
-            case SDLK_UP:
-                env->bomb_y -= 10;
+            case SDLK_z:
+                game_undo(env->jeu);
                 break;
-            case SDLK_DOWN:
-                env->bomb_y += 10;
+            case SDLK_y:
+                game_redo(env->jeu);
+                break;
+            case SDLK_s:
+                game_save(env->jeu, "game");
+                break;
+            case SDLK_h:
+                env->toggle_help = !(env->toggle_help);
                 break;
             case SDLK_ESCAPE:
                 return true;
                 break;
-        }*/
+        }
     }
 #endif
 
