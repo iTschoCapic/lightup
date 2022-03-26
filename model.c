@@ -13,33 +13,50 @@
 
 /* **************************************************************** */
 
-#define FONT "textures/arial.ttf"
+#define FONT "textures/mistral.ttf"
 #define FONTSIZE 36
 #define BACKGROUND "textures/mansion.png"
 #define BOO "textures/boo.png"
 #define SHYBOO "textures/shyboo.png"
 #define LUIGI "textures/luigi.png"
 #define MIST "textures/mist.png"
+#define TITLE "textures/title.png"
+#define RESTART "textures/restart.png"
+#define SOLVE "textures/solve.png"
+#define UNDO "textures/undo.png"
+#define REDO "textures/redo.png"
+#define HELP "textures/help.png"
+#define SAVE "textures/save.png"
 
 struct Env_t
 {
     /* PUT YOUR VARIABLES HERE */
     SDL_Texture *background;
-    SDL_Texture *wallU;
+    SDL_Texture *wallU;  // Wall unumbered
+    // Numbered walls
     SDL_Texture *wall0;
     SDL_Texture *wall1;
     SDL_Texture *wall2;
     SDL_Texture *wall3;
     SDL_Texture *wall4;
+    // Numbered walls with error flag
     SDL_Texture *wall0r;
     SDL_Texture *wall1r;
     SDL_Texture *wall2r;
     SDL_Texture *wall3r;
     SDL_Texture *wall4r;
+    // Buttons textures
+    SDL_Texture *restart;
+    SDL_Texture *solve;
+    SDL_Texture *undo;
+    SDL_Texture *redo;
+    SDL_Texture *help;
+    SDL_Texture *save;
+
     SDL_Texture *lamp;
-    SDL_Texture *lamp_error;
+    SDL_Texture *lamp_error;  // lamp texture with error flag
     SDL_Texture *mark;
-    SDL_Texture *lighted;
+    SDL_Texture *lighted;  // lighted flag
     SDL_Texture *title;
     SDL_Rect *cases;
     SDL_Rect *buttons;
@@ -104,6 +121,23 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     if (!env->lighted) ERROR("IMG_LoadTexture: %s\n", MIST);
     env->mark = IMG_LoadTexture(ren, LUIGI);
     if (!env->mark) ERROR("IMG_LoadTexture: %s\n", LUIGI);
+
+    env->restart = IMG_LoadTexture(ren, RESTART);
+    if (!env->restart) ERROR("IMG_LoadTexture: %s\n", RESTART);
+    env->solve = IMG_LoadTexture(ren, SOLVE);
+    if (!env->solve) ERROR("IMG_LoadTexture: %s\n", SOLVE);
+    env->undo = IMG_LoadTexture(ren, UNDO);
+    if (!env->undo) ERROR("IMG_LoadTexture: %s\n", UNDO);
+    env->redo = IMG_LoadTexture(ren, REDO);
+    if (!env->redo) ERROR("IMG_LoadTexture: %s\n", REDO);
+    env->help = IMG_LoadTexture(ren, HELP);
+    if (!env->help) ERROR("IMG_LoadTexture: %s\n", HELP);
+    env->save = IMG_LoadTexture(ren, SAVE);
+    if (!env->save) ERROR("IMG_LoadTexture: %s\n", SAVE);
+
+    env->title = IMG_LoadTexture(ren, TITLE);
+    if (!env->title) ERROR("IMG_LoadTexture: %s\n", TITLE);
+
     return env;
 }
 
@@ -111,8 +145,10 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
 
 void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
 {
-    /*SDL_SetRenderDrawColor(ren, 120, 120, 120, 255);
-    SDL_RenderClear(ren);*/
+    int w, h;
+    SDL_GetWindowSize(win, &w, &h);
+    SDL_Rect rect;
+
     SDL_RenderCopy(ren, env->background, NULL, NULL);
     SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
     SDL_GetWindowSize(win, &env->window_width, &env->window_height);
@@ -252,7 +288,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     int button_size = (size / 6) * 0.8;
     int button_height = env->ligne_depart.y / 2;
     int space = (size / 6) * 0.1;
-    int first_last_space = (size / 6) * 0.25;
+    /*int first_last_space = (size / 6) * 0.25;
 
     for (int r = 0; r < 6; r++)
     {
@@ -264,7 +300,45 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
         SDL_RenderFillRect(ren, &(env->buttons[r]));
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
+    }*/
+
+    env->buttons[0].h = button_height / 2;
+    env->buttons[0].w = button_size;
+    env->buttons[0].x = w / 2 - 3 * env->buttons[0].w - space * 2.5;
+    env->buttons[0].y = env->cases[0].y * 0.95 - env->buttons[0].h;
+    SDL_RenderCopy(ren, env->restart, NULL, &(env->buttons[0]));
+    for (int r = 1; r < 6; r++)
+    {
+        env->buttons[r].x = env->buttons[r - 1].x + button_size + space;
+        env->buttons[r].y = env->buttons[r - 1].y;
+        env->buttons[r].h = env->buttons[r - 1].h;
+        env->buttons[r].w = env->buttons[r - 1].w;
+        switch (r)
+        {
+            case 1:
+                SDL_RenderCopy(ren, env->solve, NULL, &(env->buttons[r]));
+                break;
+            case 2:
+                SDL_RenderCopy(ren, env->undo, NULL, &(env->buttons[r]));
+                break;
+            case 3:
+                SDL_RenderCopy(ren, env->redo, NULL, &(env->buttons[r]));
+                break;
+            case 4:
+                SDL_RenderCopy(ren, env->save, NULL, &(env->buttons[r]));
+                break;
+            case 5:
+                SDL_RenderCopy(ren, env->help, NULL, &(env->buttons[r]));
+                break;
+        }
     }
+
+    // Placement du texte
+    rect.h = env->cases[0].y * 0.7;
+    rect.w = rect.h * 4;
+    rect.x = w / 2 - rect.w / 2;
+    rect.y = 0;
+    SDL_RenderCopy(ren, env->title, NULL, &rect);
 }
 
 /* **************************************************************** */
