@@ -93,6 +93,6 @@ add_test(test_rmachecourtb_game_load ./game_test_rmachecourtb game_load)
 add_test(test_rmachecourtb_game_save ./game_test_rmachecourtb game_save)
 
 ## copy useful data files in build dir
-foreach(file "textures")
+foreach(file "textures" "games")
   file(COPY ${file} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endforeach(file)

@@ -165,6 +165,7 @@ bool solve_rec(game g, int pos, int len)
 bool game_solve(game g)
 {
     game sol = game_copy(g);
+    game_restart(sol);
     int nb_cols = game_nb_cols(g);
     int nb_rows = game_nb_rows(g);
     int len = nb_cols * nb_rows;
