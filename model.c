@@ -517,7 +517,8 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
 void clean(SDL_Window *win, SDL_Renderer *ren, Env *env)
 {
     /* PUT YOUR CODE HERE TO CLEAN MEMORY */
-
+    free(env->cases);
+    game_delete(env->jeu);
     free(env);
 }
 
