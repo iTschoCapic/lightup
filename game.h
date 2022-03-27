@@ -316,5 +316,4 @@ bool game_is_over(cgame g);
  **/
 void game_restart(game g);
 
-
 #endif  // __GAME_H__
