@@ -65,12 +65,10 @@ struct Env_t
     SDL_Texture *title;
     SDL_Texture *help_panel;
     SDL_Texture *credits;
-    bool toggle_help;
-    SDL_Rect *cases;
-    SDL_Rect *buttons;
-    game jeu;
-    int window_width, window_height;
-    SDL_Point ligne_depart, ligne_arrivee;
+    bool toggle_help;   // If true then the help panel is displayed
+    SDL_Rect *cases;    // Array to store each case of the game and access them easily
+    SDL_Rect *buttons;  // Same but for the buttons
+    game game;
 };
 
 /* **************************************************************** */
@@ -80,18 +78,16 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     Env *env = malloc(sizeof(struct Env_t));
     if (argv[1] != NULL)
     {
-        env->jeu = game_load(argv[1]);
+        env->game = game_load(argv[1]);
     }
     else
     {
-        env->jeu = game_load("../games/default.txt");
+        env->game = game_load("../games/default.txt");
     }
-    SDL_GetWindowSize(win, &env->window_width, &env->window_height);
-    env->ligne_depart.x = env->window_width / (game_nb_rows(env->jeu) + 2);
-    env->ligne_depart.y = env->window_height / (game_nb_cols(env->jeu) + 2);
-    env->cases = malloc(sizeof(SDL_Rect) * game_nb_rows(env->jeu) * (game_nb_cols(env->jeu)));
+    env->cases = malloc(sizeof(SDL_Rect) * game_nb_rows(env->game) * (game_nb_cols(env->game)));
     env->buttons = malloc(sizeof(SDL_Rect) * 6);
-    // env->wall = malloc(5 * sizeof(SDL_Texture));
+
+    // Loading of all the textures
 
     env->background = IMG_LoadTexture(ren, BACKGROUND);
     if (!env->background) ERROR("IMG_LoadTexture: %s\n", BACKGROUND);
@@ -162,35 +158,38 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
 {
     int w, h;
     SDL_GetWindowSize(win, &w, &h);
+    SDL_Point ligne_depart, ligne_arrivee;
+    ligne_depart.x = w / (game_nb_rows(env->game) + 2);
+    ligne_depart.y = h / (game_nb_cols(env->game) + 2);
     SDL_Rect rect;
 
     SDL_RenderCopy(ren, env->background, NULL, NULL);
     SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-    SDL_GetWindowSize(win, &env->window_width, &env->window_height);
+    SDL_GetWindowSize(win, &w, &h);
     int size = 0;
-    if (env->window_height < env->window_width)
+    if (h < w)
     {
-        size = env->window_height;
+        size = h;
     }
     else
     {
-        size = env->window_width;
+        size = w;
     }
-    env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2);
-    env->ligne_arrivee.x = (env->ligne_depart.x) * (game_nb_cols(env->jeu) + 1);
-    int centrage = (env->window_width - (env->ligne_depart.x + env->ligne_arrivee.x)) / 2;
+    ligne_depart.x = size / (game_nb_cols(env->game) + 2);
+    ligne_arrivee.x = (ligne_depart.x) * (game_nb_cols(env->game) + 1);
+    int centrage = (w - (ligne_depart.x + ligne_arrivee.x)) / 2;
 
     // creation des cases
-    env->cases[0].x = size / (game_nb_cols(env->jeu) + 2) + centrage;
-    env->cases[0].y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
-    env->cases[0].w = size / (game_nb_cols(env->jeu) + 2);
-    env->cases[0].h = size / (game_nb_rows(env->jeu) + 2);
-    for (int i = 1; i != (game_nb_rows(env->jeu) * game_nb_cols(env->jeu)); i++)
+    env->cases[0].x = size / (game_nb_cols(env->game) + 2) + centrage;
+    env->cases[0].y = 1.5 * size / (game_nb_rows(env->game) + 2);
+    env->cases[0].w = size / (game_nb_cols(env->game) + 2);
+    env->cases[0].h = size / (game_nb_rows(env->game) + 2);
+    for (int i = 1; i != (game_nb_rows(env->game) * game_nb_cols(env->game)); i++)
     {
         env->cases[i].x = env->cases[i - 1].x + env->cases[i - 1].w;
         env->cases[i].y = env->cases[i - 1].y;
 
-        if (i % game_nb_cols(env->jeu) == 0)  // retour à la ligne
+        if (i % game_nb_cols(env->game) == 0)  // retour à la ligne
         {
             env->cases[i].x = env->cases[0].x;
             env->cases[i].y = env->cases[i - 1].y + env->cases[0].h;
@@ -198,20 +197,19 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
         env->cases[i].w = env->cases[0].w;
         env->cases[i].h = env->cases[0].h;
     }
-    bool is_won = game_is_over(env->jeu);
-    for (int i = 0; i < game_nb_rows(env->jeu); i++)
+    bool is_won = game_is_over(env->game);
+    for (int i = 0; i < game_nb_rows(env->game); i++)
     {
-        for (int j = 0; j < game_nb_cols(env->jeu); j++)
+        for (int j = 0; j < game_nb_cols(env->game); j++)
         {
-            int case_nb = game_nb_cols(env->jeu) * i + j;
+            int case_nb = game_nb_cols(env->game) * i + j;
             int black_nb = -1;
-            square state = game_get_state(env->jeu, i, j);
-            // square flags = game_get_flags(env->jeu, i, j);
-            if (game_is_black(env->jeu, i, j))
+            square state = game_get_state(env->game, i, j);
+            if (game_is_black(env->game, i, j))
             {
                 SDL_Texture *wall = env->wallU;
-                black_nb = game_get_black_number(env->jeu, i, j);
-                if (!game_has_error(env->jeu, i, j))
+                black_nb = game_get_black_number(env->game, i, j);
+                if (!game_has_error(env->game, i, j))
                 {
                     switch (black_nb)
                     {
@@ -263,7 +261,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
             {
                 if (state == S_LIGHTBULB)
                 {
-                    if (game_has_error(env->jeu, i, j))
+                    if (game_has_error(env->game, i, j))
                         SDL_RenderCopy(ren, env->lamp_error, NULL, &(env->cases[case_nb]));
                     else if (is_won)
                         SDL_RenderCopy(ren, env->lamp_win, NULL, &(env->cases[case_nb]));
@@ -272,7 +270,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
                 }
                 else
                 {
-                    if (game_is_lighted(env->jeu, i, j)) SDL_RenderCopy(ren, env->lighted, NULL, &(env->cases[case_nb]));
+                    if (game_is_lighted(env->game, i, j)) SDL_RenderCopy(ren, env->lighted, NULL, &(env->cases[case_nb]));
                     if (state == S_MARK) SDL_RenderCopy(ren, env->mark, NULL, &(env->cases[case_nb]));
                 }
             }
@@ -281,30 +279,30 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
 
     SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);  // Lignes en blanc
     // Lignes horizontales
-    env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2) + centrage;
-    env->ligne_arrivee.x = (size / (game_nb_cols(env->jeu) + 2)) * (game_nb_cols(env->jeu) + 1) + centrage;
-    env->ligne_depart.y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
-    env->ligne_arrivee.y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
-    for (int i = 0; i != (game_nb_rows(env->jeu) + 1); i++)
+    ligne_depart.x = size / (game_nb_cols(env->game) + 2) + centrage;
+    ligne_arrivee.x = (size / (game_nb_cols(env->game) + 2)) * (game_nb_cols(env->game) + 1) + centrage;
+    ligne_depart.y = 1.5 * size / (game_nb_rows(env->game) + 2);
+    ligne_arrivee.y = 1.5 * size / (game_nb_rows(env->game) + 2);
+    for (int i = 0; i != (game_nb_rows(env->game) + 1); i++)
     {
-        SDL_RenderDrawLine(ren, env->ligne_depart.x, env->ligne_depart.y, env->ligne_arrivee.x, env->ligne_arrivee.y);
-        env->ligne_depart.y += size / (game_nb_rows(env->jeu) + 2);
-        env->ligne_arrivee.y = env->ligne_depart.y;
+        SDL_RenderDrawLine(ren, ligne_depart.x, ligne_depart.y, ligne_arrivee.x, ligne_arrivee.y);
+        ligne_depart.y += size / (game_nb_rows(env->game) + 2);
+        ligne_arrivee.y = ligne_depart.y;
     }
     // Lignes verticales
-    env->ligne_depart.x = size / (game_nb_cols(env->jeu) + 2) + centrage;
-    env->ligne_arrivee.x = size / (game_nb_cols(env->jeu) + 2) + centrage;
-    env->ligne_depart.y = 1.5 * size / (game_nb_rows(env->jeu) + 2);
-    env->ligne_arrivee.y = (size / (game_nb_rows(env->jeu) + 2)) * (game_nb_rows(env->jeu) + 1) + env->cases[0].h / 2;
-    for (int i = 0; i != (game_nb_cols(env->jeu) + 1); i++)
+    ligne_depart.x = size / (game_nb_cols(env->game) + 2) + centrage;
+    ligne_arrivee.x = size / (game_nb_cols(env->game) + 2) + centrage;
+    ligne_depart.y = 1.5 * size / (game_nb_rows(env->game) + 2);
+    ligne_arrivee.y = (size / (game_nb_rows(env->game) + 2)) * (game_nb_rows(env->game) + 1) + env->cases[0].h / 2;
+    for (int i = 0; i != (game_nb_cols(env->game) + 1); i++)
     {
-        SDL_RenderDrawLine(ren, env->ligne_depart.x, env->ligne_depart.y, env->ligne_arrivee.x, env->ligne_arrivee.y);
-        env->ligne_depart.x += size / (game_nb_cols(env->jeu) + 2);
-        env->ligne_arrivee.x = env->ligne_depart.x;
+        SDL_RenderDrawLine(ren, ligne_depart.x, ligne_depart.y, ligne_arrivee.x, ligne_arrivee.y);
+        ligne_depart.x += size / (game_nb_cols(env->game) + 2);
+        ligne_arrivee.x = ligne_depart.x;
     }
     /*Creation des boutons*/
     int button_size = (size / 6) * 0.8;
-    int button_height = env->ligne_depart.y / 2;
+    int button_height = ligne_depart.y / 2;
     int space = (size / 6) * 0.1;
 
     env->buttons[0].h = button_height / 2;
@@ -349,7 +347,7 @@ void render(SDL_Window *win, SDL_Renderer *ren, Env *env)
     rect.h = env->cases[0].h / 2;
     rect.w = rect.h * 9;
     rect.x = w / 2 - rect.w / 2;
-    rect.y = env->ligne_arrivee.y + 3;
+    rect.y = ligne_arrivee.y + 3;
     SDL_RenderCopy(ren, env->credits, NULL, &rect);
 
     // Placement du panneau d'aide
@@ -387,115 +385,82 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
     }
     /* other events */
 #else
-    else if (e->type == SDL_MOUSEBUTTONDOWN)
+    else if (e->type == SDL_MOUSEBUTTONDOWN)  // If mouse click
     {
         SDL_Point mouse;
         SDL_GetMouseState(&mouse.x, &mouse.y);
 
-        for (int i = 0; i < game_nb_rows(env->jeu); i++)
+        for (int i = 0; i < game_nb_rows(env->game); i++)
         {
-            for (int j = 0; j < game_nb_cols(env->jeu); j++)
+            for (int j = 0; j < game_nb_cols(env->game); j++)
             {
-                if (SDL_PointInRect(&mouse, &(env->cases[game_nb_cols(env->jeu) * i + j])))
+                // We check if the click is in one of the case of the grid
+                if (SDL_PointInRect(&mouse, &(env->cases[game_nb_cols(env->game) * i + j])))
                 {
+                    // If so, we play a lamp or a mark in this case
                     if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
                     {
-                        square state = game_get_state(env->jeu, i, j);
+                        square state = game_get_state(env->game, i, j);
                         if (state == S_LIGHTBULB)
-                            game_play_move(env->jeu, i, j, S_BLANK);
+                            game_play_move(env->game, i, j, S_BLANK);
                         else if (state == S_BLANK)
-                            game_play_move(env->jeu, i, j, S_LIGHTBULB);
+                            game_play_move(env->game, i, j, S_LIGHTBULB);
                     }
                     else if ((e->button.button) == SDL_BUTTON_RIGHT)  // If right click then mark
                     {
-                        square state = game_get_state(env->jeu, i, j);
+                        square state = game_get_state(env->game, i, j);
                         if (state == S_MARK)
-                            game_play_move(env->jeu, i, j, S_BLANK);
+                            game_play_move(env->game, i, j, S_BLANK);
                         else if (state == S_BLANK)
-                            game_play_move(env->jeu, i, j, S_MARK);
+                            game_play_move(env->game, i, j, S_MARK);
                     }
                 }
             }
         }
-
-        /*// We first check if the click is in the game grid
-        if (mouse.x > grid_x && mouse.x < (grid_x) + (game_nb_cols(env->jeu)) * (grid_w) && mouse.y > grid_y && mouse.y < (grid_y) + (game_nb_rows(env->jeu)) * (grid_h))
-        {
-            // We find the coordinates (i,j) of the case in which we clicked
-            int case_i = -1;
-            int case_j = -1;
-            int k = grid_y;
-            while (k < mouse.y)
-            {
-                case_i++;
-                k += grid_h;
-            }
-            k = grid_x;
-            while (k < mouse.x)
-            {
-                case_j++;
-                k += grid_w;
-            }
-            if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
-            {
-                square state = game_get_state(env->jeu, case_i, case_j);
-                if (state == S_LIGHTBULB)
-                    game_play_move(env->jeu, case_i, case_j, S_BLANK);
-                else if (state == S_BLANK)
-                    game_play_move(env->jeu, case_i, case_j, S_LIGHTBULB);
-            }
-            else if ((e->button.button) == SDL_BUTTON_RIGHT)  // If right click then mark
-            {
-                square state = game_get_state(env->jeu, case_i, case_j);
-                if (state == S_MARK)
-                    game_play_move(env->jeu, case_i, case_j, S_BLANK);
-                else if (state == S_BLANK)
-                    game_play_move(env->jeu, case_i, case_j, S_MARK);
-            }
-        }*/
-
+        // We check if the click is in one of the buttons
         if (SDL_PointInRect(&mouse, &(env->buttons[0])))
-            game_restart(env->jeu);
+            game_restart(env->game);
 
         else if (SDL_PointInRect(&mouse, &(env->buttons[1])))
-            game_solve(env->jeu);
+            game_solve(env->game);
 
         else if (SDL_PointInRect(&mouse, &(env->buttons[2])))
-            game_undo(env->jeu);
+            game_undo(env->game);
 
         else if (SDL_PointInRect(&mouse, &(env->buttons[3])))
-            game_redo(env->jeu);
+            game_redo(env->game);
 
         else if (SDL_PointInRect(&mouse, &(env->buttons[4])))
         {
             time_t now = time(NULL);
-            struct tm tm_now = *localtime(&now);
-            char s_now[sizeof "saveJJMMAAAA_HHMMSS"];
+            struct tm tm_now = *localtime(&now);       // Save the game with the format 'saveJJMMAAAA_HHMMSS'
+            char s_now[sizeof "saveJJMMAAAA_HHMMSS"];  // Using the date and the time
             strftime(s_now, sizeof s_now, "save%d%m%Y_%H%M%S", &tm_now);
-            game_save(env->jeu, s_now);
+            game_save(env->game, s_now);
         }
 
         else if (SDL_PointInRect(&mouse, &(env->buttons[5])))
-            env->toggle_help = !(env->toggle_help);
+            env->toggle_help = !(env->toggle_help);  // Will toggle the help panel
     }
+    // Keyboard shortcut for buttons
     else if (e->type == SDL_KEYDOWN)
     {
         switch (e->key.keysym.sym)
         {
             case SDLK_r:
-                game_restart(env->jeu);
+                game_restart(env->game);
                 break;
             case SDLK_q:
-                game_solve(env->jeu);
+                game_solve(env->game);
                 break;
             case SDLK_z:
-                game_undo(env->jeu);
+                game_undo(env->game);
                 break;
             case SDLK_y:
-                game_redo(env->jeu);
+                game_redo(env->game);
                 break;
             case SDLK_s:
-                game_save(env->jeu, "game");
+                game_save(env->game, "game");
                 break;
             case SDLK_h:
                 env->toggle_help = !(env->toggle_help);
@@ -517,8 +482,39 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
 void clean(SDL_Window *win, SDL_Renderer *ren, Env *env)
 {
     /* PUT YOUR CODE HERE TO CLEAN MEMORY */
-    free(env->cases);
-    game_delete(env->jeu);
+
+    // Clean all the textures
+    SDL_DestroyTexture(env->background);
+    SDL_DestroyTexture(env->wallU);
+    SDL_DestroyTexture(env->wall0);
+    SDL_DestroyTexture(env->wall1);
+    SDL_DestroyTexture(env->wall2);
+    SDL_DestroyTexture(env->wall3);
+    SDL_DestroyTexture(env->wall4);
+    SDL_DestroyTexture(env->wall0r);
+    SDL_DestroyTexture(env->wall1r);
+    SDL_DestroyTexture(env->wall2r);
+    SDL_DestroyTexture(env->wall3r);
+    SDL_DestroyTexture(env->wall4r);
+    SDL_DestroyTexture(env->restart);
+    SDL_DestroyTexture(env->undo);
+    SDL_DestroyTexture(env->solve);
+    SDL_DestroyTexture(env->redo);
+    SDL_DestroyTexture(env->save);
+    SDL_DestroyTexture(env->help);
+    SDL_DestroyTexture(env->lamp);
+    SDL_DestroyTexture(env->lamp_error);
+    SDL_DestroyTexture(env->lamp_win);
+    SDL_DestroyTexture(env->lighted);
+    SDL_DestroyTexture(env->mark);
+    SDL_DestroyTexture(env->title);
+    SDL_DestroyTexture(env->help_panel);
+    SDL_DestroyTexture(env->credits);
+
+    if (env->cases) free(env->cases);
+    if (env->buttons) free(env->buttons);
+    game_delete(env->game);
+
     free(env);
 }
 
