@@ -55,3 +55,9 @@ dkms.conf
 build/
 .vscode/
 .txt
+
+android/bin/*
+android/jni/SDL*
+android/libs/*
+android/obj/*
+android/gen/*
