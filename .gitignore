@@ -51,15 +51,14 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# Other
+build/
+.vscode/
+.txt
 
-# portage android
+# Portage android
 android/bin/*
 android/jni/SDL*
 android/libs/*
 android/obj/*
 android/gen/*
-
-# Other
-build/
-.vscode/
-.txt
