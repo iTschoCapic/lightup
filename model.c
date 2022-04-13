@@ -11,10 +11,11 @@
 #include "game.h"
 #include "game_ext.h"
 #include "game_tools.h"
+#include "game_aux.h"
 
 /* **************************************************************** */
 
-#define FONT "textures/mistral.ttf"
+#define FONT "fonts/mistral.ttf"
 #define FONTSIZE 36
 #define BACKGROUND "textures/mansion.png"
 #define BOO "textures/boo.png"
@@ -82,7 +83,7 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     }
     else
     {
-        env->game = game_load("../games/default.txt");
+        env->game = game_default();
     }
     env->cases = malloc(sizeof(SDL_Rect) * game_nb_rows(env->game) * (game_nb_cols(env->game)));
     env->buttons = malloc(sizeof(SDL_Rect) * 6);
@@ -378,11 +379,11 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
     }
     /* Android events */
 #ifdef __ANDROID__
-    else if (e->type == SDL_FINGERDOWN)
-    {
-        env->mario_x = e->tfinger.x * w; /* tfinger.x, normalized in [0..1] */
-        env->mario_y = e->tfinger.y * h; /* tfinger.y, normalized in [0..1] */
-    }
+    //else if (e->type == SDL_FINGERDOWN)
+    //{
+        //env->mario_x = e->tfinger.x * w; /* tfinger.x, normalized in [0..1] */
+        //env->mario_y = e->tfinger.y * h; /* tfinger.y, normalized in [0..1] */
+    //}
     /* other events */
 #else
     else if (e->type == SDL_MOUSEBUTTONDOWN)  // If mouse click

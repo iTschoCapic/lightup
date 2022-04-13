@@ -14,8 +14,8 @@
   <!-- Allow writing to external storage -->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   
-  <application android:label="SDL2 Demo"
-               android:icon="@drawable/icon"
+  <application android:label="Lightup"
+               android:icon="@drawable/boo"
                android:allowBackup="true"
                android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                android:hardwareAccelerated="true" >

@@ -14,7 +14,7 @@ YOUR_SRC_FILES= game.c game_sdl.c model.c game_aux.c game_tools.c queue.c
 
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c $(YOUR_SRC_FILES)
 
-LOCAL_SHARED_LIBRARIES := SDL2 SDL2_ttf SDL2_imageq
+LOCAL_SHARED_LIBRARIES := SDL2 SDL2_ttf SDL2_image
 
 LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -llog
 
