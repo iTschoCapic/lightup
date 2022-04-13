@@ -86,7 +86,6 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     {
         env->game = game_default();
     }
-    SDL_Log("c\n");
     env->cases = malloc(sizeof(SDL_Rect) * game_nb_rows(env->game) * (game_nb_cols(env->game)));
     env->buttons = malloc(sizeof(SDL_Rect) * 6);
 
@@ -375,74 +374,83 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
 {
     int w, h;
     SDL_GetWindowSize(win, &w, &h);
+    SDL_Point click;    // Will store the coordinates of the click, no matter if it is with mouse of finger
     if (e->type == SDL_QUIT)
     {
         return true;
     }
     /* Android events */
-#ifdef __ANDROID__
-    //else if (e->type == SDL_FINGERDOWN)
-    //{
-        //env->mario_x = e->tfinger.x * w; /* tfinger.x, normalized in [0..1] */
-        //env->mario_y = e->tfinger.y * h; /* tfinger.y, normalized in [0..1] */
-    //}
-    /* other events */
-#else
-    else if (e->type == SDL_MOUSEBUTTONDOWN)  // If mouse click
-    {
-        SDL_Point mouse;
-        SDL_GetMouseState(&mouse.x, &mouse.y);
-
+    else if (e->type == SDL_FINGERDOWN || e->type == SDL_MOUSEBUTTONDOWN){      // If there is a click (mouse or finger)
+        if (e->type == SDL_MOUSEBUTTONDOWN)  // If mouse click 
+        {
+            SDL_GetMouseState(&click.x, &click.y);
+        }
+        #ifdef __ANDROID__
+            else if (e->type == SDL_FINGERDOWN)     // If finger touch
+                {
+                    click.x = e->tfinger.x;
+                    click.y = e->tfinger.y;
+                }
+        #endif
         for (int i = 0; i < game_nb_rows(env->game); i++)
         {
             for (int j = 0; j < game_nb_cols(env->game); j++)
             {
                 // We check if the click is in one of the case of the grid
-                if (SDL_PointInRect(&mouse, &(env->cases[game_nb_cols(env->game) * i + j])))
+                if (SDL_PointInRect(&click, &(env->cases[game_nb_cols(env->game) * i + j])))
                 {
                     // If so, we play a lamp or a mark in this case
-                    if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
-                    {
-                        square state = game_get_state(env->game, i, j);
-                        if (state == S_LIGHTBULB)
-                            game_play_move(env->game, i, j, S_BLANK);
-                        else if (state == S_BLANK)
-                            game_play_move(env->game, i, j, S_LIGHTBULB);
-                    }
-                    else if ((e->button.button) == SDL_BUTTON_RIGHT)  // If right click then mark
-                    {
-                        square state = game_get_state(env->game, i, j);
-                        if (state == S_MARK)
-                            game_play_move(env->game, i, j, S_BLANK);
-                        else if (state == S_BLANK)
+                    square state = game_get_state(env->game, i, j);
+                    #ifdef __ANDROID__          
+                        if (state == S_BLANK)
+                            game_play_move(env->game, i, j, S_LIGHTBULB);   // We cycle Lightbulb -> Mark -> Blank in the case at each touch
+                        else if (state == S_LIGHTBULB)
                             game_play_move(env->game, i, j, S_MARK);
-                    }
+                        else if (state == S_MARK)
+                            game_play_move(env->game, i, j, S_BLANK);
+                    #endif
+                    #ifndef __ANDROID__
+                        if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
+                        {
+                            if (state == S_LIGHTBULB)
+                                game_play_move(env->game, i, j, S_BLANK);
+                            else if (state == S_BLANK)
+                                game_play_move(env->game, i, j, S_LIGHTBULB);
+                        }
+                        else if ((e->button.button) == SDL_BUTTON_RIGHT)  // If right click then mark
+                        {
+                            if (state == S_MARK)
+                                game_play_move(env->game, i, j, S_BLANK);
+                            else if (state == S_BLANK)
+                                game_play_move(env->game, i, j, S_MARK);
+                        }
+                    #endif
                 }
             }
         }
         // We check if the click is in one of the buttons
-        if (SDL_PointInRect(&mouse, &(env->buttons[0])))
+        if (SDL_PointInRect(&click, &(env->buttons[0])))
             game_restart(env->game);
 
-        else if (SDL_PointInRect(&mouse, &(env->buttons[1])))
+        else if (SDL_PointInRect(&click, &(env->buttons[1])))
             game_solve(env->game);
 
-        else if (SDL_PointInRect(&mouse, &(env->buttons[2])))
+        else if (SDL_PointInRect(&click, &(env->buttons[2])))
             game_undo(env->game);
 
-        else if (SDL_PointInRect(&mouse, &(env->buttons[3])))
+        else if (SDL_PointInRect(&click, &(env->buttons[3])))
             game_redo(env->game);
 
-        else if (SDL_PointInRect(&mouse, &(env->buttons[4])))
+        /*else if (SDL_PointInRect(&click, &(env->buttons[4])))     // Saving in file is not working with the emulator so we disabled it
         {
             time_t now = time(NULL);
             struct tm tm_now = *localtime(&now);       // Save the game with the format 'saveJJMMAAAA_HHMMSS'
             char s_now[sizeof "saveJJMMAAAA_HHMMSS"];  // Using the date and the time
             strftime(s_now, sizeof s_now, "save%d%m%Y_%H%M%S", &tm_now);
             game_save(env->game, s_now);
-        }
+        }*/
 
-        else if (SDL_PointInRect(&mouse, &(env->buttons[5])))
+        else if (SDL_PointInRect(&click, &(env->buttons[5])))
             env->toggle_help = !(env->toggle_help);  // Will toggle the help panel
     }
     // Keyboard shortcut for buttons
@@ -473,7 +481,6 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
                 break;
         }
     }
-#endif
 
     return false; /* don't quit */
 }

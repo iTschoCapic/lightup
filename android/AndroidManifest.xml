@@ -14,7 +14,7 @@
   <!-- Allow writing to external storage -->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   
-  <application android:label="Lightup"
+  <application android:label="Don't be Shy !"
                android:icon="@drawable/boo"
                android:allowBackup="true"
                android:theme="@android:style/Theme.NoTitleBar.Fullscreen"

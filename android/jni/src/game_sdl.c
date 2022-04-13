@@ -27,7 +27,6 @@ int main(int argc, char* argv[])
     /* main render loop */
     SDL_Event e;
     bool quit = false;
-    SDL_Log("b\n");
     while (!quit)
     {
         /* manage events */
