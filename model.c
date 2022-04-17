@@ -17,7 +17,6 @@
 #include "game.h"
 #include "game_aux.h"
 #include "game_ext.h"
-#include "game_random.c"
 #include "game_tools.h"
 
 /* **************************************************************** */

@@ -8,8 +8,11 @@
 
 #ifndef __GAME_TOOLS_H__
 #define __GAME_TOOLS_H__
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "game.h"
 
@@ -50,6 +53,23 @@ bool game_solve(game g);
  * @return the number of solutions
  */
 uint game_nb_solutions(cgame g);
+
+uint nb_neigh_lightbulbs(cgame g, uint i, uint j);
+
+uint nb_unlit_squares(cgame g);
+
+/**
+ * Create a random game with a given size and number of walls
+ *
+ * @param nb_rows the number of rows of the game
+ * @param nb_cols the number of columns of the game
+ * @param wrapping wrapping option
+ * @param nb_walls the number of walls to add
+ * @param with_solution if true, the game contains the solution, otherwise only walls
+ *
+ * @return the generated random game
+ */
+game game_random(uint nb_rows, uint nb_cols, bool wrapping, uint nb_walls, bool with_solution);
 
 /**
  * @}

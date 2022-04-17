@@ -26,7 +26,7 @@ add_executable(game_test_arledoux game_test_arledoux.c)
 add_executable(game_test_rmachecourtb game_test_rmachecourtb.c)
 
 #Libraries:
-add_library(game game.c game_aux.c game_tools.c game_random.c queue.c)
+add_library(game game.c game_aux.c game_tools.c queue.c)
 
 target_link_libraries(game_text game ) 
 target_link_libraries(game_test_abdouldiallo game ) 
