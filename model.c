@@ -39,7 +39,7 @@
 #define CREDITS "textures/credits.png"
 
 #ifdef __ANDROID__
-#define HELP_PANEL "textures/help_panel_full.png"
+#define HELP_PANEL "textures/help_panel_android.png"
 #else
 #define HELP_PANEL "textures/help_panel.png"
 #endif
