@@ -1,7 +1,11 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#ifdef __ANDROID__
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
 #include <stdbool.h>
 #include <stdio.h>
 

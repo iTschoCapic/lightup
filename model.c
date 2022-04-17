@@ -1,17 +1,24 @@
 #include "model.h"
 
+#ifdef __ANDROID__
+#include <SDL.h>
+#include <SDL_image.h>  // required to load transparent texture from PNG
+#include <SDL_ttf.h>    // required to use TTF fonts
+#else
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>  // required to load transparent texture from PNG
-#include <SDL2/SDL_ttf.h>    // required to use TTF fonts
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#endif
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 #include "game.h"
-#include "game_ext.h"
-#include "game_tools.h"
 #include "game_aux.h"
+#include "game_ext.h"
+#include "game_random.c"
+#include "game_tools.h"
 
 /* **************************************************************** */
 
@@ -30,8 +37,13 @@
 #define REDO "textures/redo.png"
 #define HELP "textures/help.png"
 #define SAVE "textures/save.png"
-#define HELP_PANEL "textures/help_panel.png"
 #define CREDITS "textures/credits.png"
+
+#ifdef __ANDROID__
+#define HELP_PANEL "textures/help_panel_full.png"
+#else
+#define HELP_PANEL "textures/help_panel.png"
+#endif
 
 struct Env_t
 {
@@ -83,7 +95,8 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     }
     else
     {
-        env->game = game_default();
+        srand(time(NULL));
+        env->game = game_random(7, 7, false, 10, false);
     }
     env->cases = malloc(sizeof(SDL_Rect) * game_nb_rows(env->game) * (game_nb_cols(env->game)));
     env->buttons = malloc(sizeof(SDL_Rect) * 6);
@@ -107,7 +120,7 @@ Env *init(SDL_Window *win, SDL_Renderer *ren, int argc, char *argv[])
     env->wall4 = IMG_LoadTexture(ren, "textures/block4.png");
     if (!env->wall4) ERROR("IMG_LoadTexture: %s\n", "textures/block4.png");
 
-    env->wall0r = IMG_LoadTexture(ren, "textures/block0.png");
+    env->wall0r = IMG_LoadTexture(ren, "textures/block0r.png");
     if (!env->wall0r) ERROR("IMG_LoadTexture: %s\n", "textures/block0r.png");
     env->wall1r = IMG_LoadTexture(ren, "textures/block1r.png");
     if (!env->wall1r) ERROR("IMG_LoadTexture: %s\n", "textures/block1r.png");
@@ -373,25 +386,25 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
 {
     int w, h;
     SDL_GetWindowSize(win, &w, &h);
-    SDL_Point click;    // Will store the coordinates of the click, no matter if it is with mouse of finger
+    SDL_Point click;  // Will store the coordinates of the click, no matter if it is with mouse of finger
     if (e->type == SDL_QUIT)
     {
         return true;
     }
     /* Android events */
-    else if (e->type == SDL_FINGERDOWN || e->type == SDL_MOUSEBUTTONDOWN)   // If there is a click (mouse or finger)
-    {      
-        if (e->type == SDL_MOUSEBUTTONDOWN)  // If mouse click 
+    else if (e->type == SDL_FINGERDOWN || e->type == SDL_MOUSEBUTTONDOWN)  // If there is a click (mouse or finger)
+    {
+        if (e->type == SDL_MOUSEBUTTONDOWN)  // If mouse click
         {
             SDL_GetMouseState(&click.x, &click.y);
         }
-        #ifdef __ANDROID__
-            else if (e->type == SDL_FINGERDOWN)     // If finger touch
-                {
-                    click.x = e->tfinger.x;
-                    click.y = e->tfinger.y;
-                }
-        #endif
+#ifdef __ANDROID__
+        else if (e->type == SDL_FINGERDOWN)  // If finger touch
+        {
+            click.x = e->tfinger.x;
+            click.y = e->tfinger.y;
+        }
+#endif
         for (int i = 0; i < game_nb_rows(env->game); i++)
         {
             for (int j = 0; j < game_nb_cols(env->game); j++)
@@ -401,30 +414,30 @@ bool process(SDL_Window *win, SDL_Renderer *ren, Env *env, SDL_Event *e)
                 {
                     // If so, we play a lamp or a mark in this case
                     square state = game_get_state(env->game, i, j);
-                    #ifdef __ANDROID__          
-                        if (state == S_BLANK)
-                            game_play_move(env->game, i, j, S_LIGHTBULB);   // We cycle Lightbulb -> Mark -> Blank in the case at each touch
-                        else if (state == S_LIGHTBULB)
-                            game_play_move(env->game, i, j, S_MARK);
-                        else if (state == S_MARK)
+#ifdef __ANDROID__
+                    if (state == S_BLANK)
+                        game_play_move(env->game, i, j, S_LIGHTBULB);  // We cycle Lightbulb -> Mark -> Blank in the case at each touch
+                    else if (state == S_LIGHTBULB)
+                        game_play_move(env->game, i, j, S_MARK);
+                    else if (state == S_MARK)
+                        game_play_move(env->game, i, j, S_BLANK);
+#endif
+#ifndef __ANDROID__
+                    if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
+                    {
+                        if (state == S_LIGHTBULB)
                             game_play_move(env->game, i, j, S_BLANK);
-                    #endif
-                    #ifndef __ANDROID__
-                        if ((e->button.button) == SDL_BUTTON_LEFT)  // If left click then lightbulb
-                        {
-                            if (state == S_LIGHTBULB)
-                                game_play_move(env->game, i, j, S_BLANK);
-                            else if (state == S_BLANK)
-                                game_play_move(env->game, i, j, S_LIGHTBULB);
-                        }
-                        else if ((e->button.button) == SDL_BUTTON_RIGHT)  // If right click then mark
-                        {
-                            if (state == S_MARK)
-                                game_play_move(env->game, i, j, S_BLANK);
-                            else if (state == S_BLANK)
-                                game_play_move(env->game, i, j, S_MARK);
-                        }
-                    #endif
+                        else if (state == S_BLANK)
+                            game_play_move(env->game, i, j, S_LIGHTBULB);
+                    }
+                    else if ((e->button.button) == SDL_BUTTON_RIGHT)  // If right click then mark
+                    {
+                        if (state == S_MARK)
+                            game_play_move(env->game, i, j, S_BLANK);
+                        else if (state == S_BLANK)
+                            game_play_move(env->game, i, j, S_MARK);
+                    }
+#endif
                 }
             }
         }

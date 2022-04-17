@@ -1,6 +1,12 @@
+#ifdef __ANDROID__
+#include <SDL.h>
+#include <SDL_image.h>  // required to load transparent texture from PNG
+#include <SDL_ttf.h>    // required to use TTF fonts
+#else
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>  // required to load transparent texture from PNG
-#include <SDL2/SDL_ttf.h>    // required to use TTF fonts
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#endif
 #include <stdbool.h>
 #include <stdio.h>
 
