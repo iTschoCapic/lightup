@@ -62,3 +62,7 @@ android/jni/SDL*
 android/libs/*
 android/obj/*
 android/gen/*
+
+# Portage web
+web/game.wasm
+web/game.js

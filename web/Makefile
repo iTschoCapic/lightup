@@ -9,7 +9,7 @@ LIBSRC  := $(wildcard src/*.c)
 LIBOBJ  := $(LIBSRC:.c=.o)
 
 game.wasm game.js: wrapper.o libgame.a
-	emcc $^ -o $@ -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_RUNTIME_METHODS=ccall,cwrap
+	emcc $^ -o $@ -s ALLOW_MEMORY_GROWTH=1 -s EXPORTED_RUNTIME_METHODS="['ccall','cwrap']"
 
 %.o: %.c
 	emcc -I src -c $< -o $@
