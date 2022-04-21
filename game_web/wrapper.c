@@ -10,10 +10,10 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "game.h"
-#include "game_aux.h"
-#include "game_ext.h"
-// #include "game_tools.h"
+#include "../game.h"
+#include "../game_aux.h"
+#include "../game_ext.h"
+#include "../game_tools.h"
 
 /* ******************** Game V1 & V2 API ******************** */
 
@@ -92,4 +92,4 @@ game new_random(uint nb_rows, uint nb_cols, bool wrapping, uint nb_walls, bool w
   return game_random(nb_rows, nb_cols, wrapping, nb_walls, with_solution);
 }
 
-EOF
+//EOF
