@@ -1,3 +1,8 @@
+html {
+    background-image: url("images/mansion.png");
+    color: white;
+}
+
 .show {
     color: darkturquoise;
     font-family: serif;
@@ -14,8 +19,8 @@
 }
 
 .header {
-    background-color: #f1f1f1;
     padding: 10px;
+    font-family: mistral;
     text-align: center;
     font-weight: bold;
     font-size: xx-large;
@@ -25,30 +30,30 @@
     background-color: #f1f1f1;
     padding: 10px;
     text-align: center;
-}  
+}
 
-.gamemenu { 
+.gamemenu {
     height: 40px;
     width: 60px;
     font-weight: bold;
     font-size: medium;
-    margin-top: 0; 
-    margin-bottom: 0; 
-    text-align: center 
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center
 }
 
-.restart { 
+.restart {
     height: 40px;
     width: 80px;
     font-weight: bold;
     font-size: medium;
-    margin-top: 0; 
-    margin-bottom: 0; 
-    text-align: center 
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center
 }
 
 canvas {
-    background: lightgray;
-    outline: 1px solid black;
+    background: rgba(128, 128, 128, 0);
+    outline: 1px solid white;
     /* Hint: do not add padding to canvas! */
 }

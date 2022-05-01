@@ -7,7 +7,7 @@
     <meta name="keywords" content="HTML, CSS, JavaScript">
     <meta name="author" content="Loïc Richard , Maxime Audain , Renaud Machecourt-Bourgeois">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lightup Game</title>
+    <title>Don't be Shy !</title>
     <link rel="stylesheet" type="text/css" href="mystyle.css">
 </head>
 
@@ -19,7 +19,7 @@
     <div id="puzzle" style="display: inline;">
         <div class="gamemenu" style="display: inline;">
             <p align="center">
-                <button class="restart" onclick="start()">Game...</button>
+                <button class="restart" onclick="start()">New</button>
                 <button class="restart" onclick="restart(g)">Restart</button>
                 <button class="gamemenu" onclick="undo(g)">Undo</button>
                 <button class="gamemenu" onclick="redo(g)">Redo</button>
@@ -44,28 +44,30 @@
     <hr>
     <div>
         <p>
-            Place light bulbs in the grid so as to light up all the blank squares. A light illuminates its own square and all the squares in
-            the same row or column unless blocked by walls (black squares). Lights may not illuminate each other. Each numbered square must be
+            Place light bulbs in the grid so as to light up all the blank squares. A light illuminates its own square
+            and all the squares in
+            the same row or column unless blocked by walls (black squares). Lights may not illuminate each other. Each
+            numbered square must be
             orthogonally adjacent to exactly the given number of lights.
         </p>
         <p>
-            Click on a square to place or remove a light. Right-click to place a dot indicating that you think there is no light in that square.
+            Click on a square to place or remove a light. Right-click to place a dot indicating that you think there is
+            no light in that square.
         </p>
 
     </div>
     <hr>
     (comments to <a href="loic.richard@etu.u-bordeaux.fr">richard@etu.u-bordeaux.fr</a>)
     <br>
-    (Last modified on 
+    (Last modified on
     <!--LASTMOD-->
-    Thur Apr 28 
+    Thur Apr 28
     <!--END-->)
     <br>
     <em>Loïc Maxime Renaud , 2022.</em>
-    
+
     <script src="game.js"></script>
     <script src="demo.js"> </script>
-    <script src="mystyle.css"></script>
 
 </body>
 
