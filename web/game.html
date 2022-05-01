@@ -19,7 +19,7 @@
     <div id="puzzle" style="display: inline;">
         <div class="gamemenu" style="display: inline;">
             <p align="center">
-                <button class="restart" onclick="">Game...</button>
+                <button class="restart" onclick="start()">Game...</button>
                 <button class="restart" onclick="restart(g)">Restart</button>
                 <button class="gamemenu" onclick="undo(g)">Undo</button>
                 <button class="gamemenu" onclick="redo(g)">Redo</button>
@@ -29,6 +29,7 @@
         <div align="center">
             <canvas id='mycanvas' width="400px" height="400px">
                 <button onload="start()">JEU</button>
+
             </canvas>
             <!-- <div id="resizable" style="position: relative; left: 0px; top: 0px; width: 295px;">
 
