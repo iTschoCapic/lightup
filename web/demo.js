@@ -62,6 +62,7 @@ elm.addEventListener('contextmenu', RightClickEvent);
 // Buttons
 
 function restart() {
+    console.log("Restart");
     Module._restart(g);
     ctx.clearRect(0, 0, Module._nb_rows(g) * ecart, Module._nb_cols(g) * ecart);
     drawgrid();
@@ -69,17 +70,26 @@ function restart() {
 }
 
 function undo() {
+    console.log("Undo");
     Module._undo(g);
     printGame(g);
 }
 
 function redo() {
+    console.log("Redo");
     Module._redo(g);
     printGame(g);
 }
 
 function solve() {
+    console.log("Solve");
     Module._solve(g);
+    printGame(g);
+}
+
+function new_game() {
+    console.log("New");
+    g = Module._new_random(7, 7, 0, 10, false);
     printGame(g);
 }
 
@@ -97,9 +107,6 @@ function LeftClickEvent(event) {
         Module._play_move(g, i, j, BLANK);
     }
     printGame(g);
-    if (Module._is_over(g)) {
-        stop();
-    }
 }
 
 function RightClickEvent(event) {
@@ -114,9 +121,6 @@ function RightClickEvent(event) {
         Module._play_move(g, i, j, BLANK);
     }
     printGame(g);
-    if (Module._is_over(g)) {
-        stop();
-    }
 }
 
 // Draw
@@ -150,6 +154,7 @@ function printGame(g) {
     ecart = elm.height / nb_rows;
     var ecart2 = ecart * 0.9;
     var ecart3 = (ecart - ecart2) / 2;
+    drawgrid()
     for (var row = 0; row < nb_rows; row++) {
         for (var col = 0; col < nb_cols; col++) {
             var blank = Module._is_blank(g, row, col);
@@ -160,76 +165,79 @@ function printGame(g) {
             var error = Module._has_error(g, row, col);
             if (black && !error) {
                 if (Module._get_black_number(g, row, col) == 0) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block0, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block0, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 1) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block1, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block1, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 2) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block2, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block2, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 3) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block3, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block3, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 4) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block4, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block4, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == -1) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(blockU, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(blockU, row * ecart, col * ecart, ecart, ecart);
                 }
             } else if (black && error) {
                 if (Module._get_black_number(g, row, col) == 0) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block0r, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block0r, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 1) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block1r, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block1r, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 2) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block2r, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block2r, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 3) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block3r, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block3r, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == 4) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(block4r, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(block4r, row * ecart, col * ecart, ecart, ecart);
                 } else if (Module._get_black_number(g, row, col) == -1) {
-                    ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                    ctx.drawImage(blockUr, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                    ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                    ctx.drawImage(blockUr, row * ecart, col * ecart, ecart, ecart);
                 }
             } else if (lightbulb && Module._is_over(g)) {
-                ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                ctx.drawImage(kingboo, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                console.log("Game won");
+                ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                ctx.drawImage(kingboo, row * ecart, col * ecart, ecart, ecart);
             } else if (lightbulb && !error) {
-                ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                ctx.drawImage(boo, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                ctx.drawImage(boo, row * ecart, col * ecart, ecart, ecart);
             } else if (lightbulb && error) {
-                ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                ctx.drawImage(shyboo, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                ctx.drawImage(shyboo, row * ecart, col * ecart, ecart, ecart);
             } else if (marked && !error) {
-                ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                ctx.drawImage(luigi, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                ctx.drawImage(luigi, row * ecart, col * ecart, ecart, ecart);
             } else if (ligthed && !error) {
-                ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-                ctx.drawImage(mist, row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
+                ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                ctx.drawImage(mist, row * ecart, col * ecart, ecart, ecart);
             } else if (blank && !error) {
-                ctx.clearRect(row * ecart + ecart3, col * ecart + ecart3, ecart2, ecart2);
-            } else {
-
+                ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
             }
         }
     }
 }
 
+function ShybooToBoo() {
+    let elt = document.getElementById("boo");
+    elt.src = "images/shyboo.png";
+}
+
+function BooToShyboo() {
+    let elt = document.getElementById("boo");
+    elt.src = "images/boo.png";
+}
+
 function start() {
     console.log("call start routine");
     g = Module._new_random(7, 7, 0, 10, false);
-    drawgrid();
     printGame(g);
-}
-
-function stop() {
-    console.log("Win");
-    Module._delete(g);
 }

@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="description" content="Game web">
-    <meta name="keywords" content="HTML, CSS, JavaScript">
-    <meta name="author" content="Loïc Richard , Maxime Audain , Renaud Machecourt-Bourgeois">
+    <meta name="keywords" content="game, luigi, boo">
+    <meta name="author" content="Loïc Richard , Maxime Audrain , Renaud Machecourt-Bourgeois">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don't be Shy !</title>
     <link rel="stylesheet" type="text/css" href="mystyle.css">
@@ -13,14 +13,16 @@
 
 <body>
     <div class="header">
-        <h1>Lightup Game</h1>
+        <h1>Don't be Shy !</h1>
+        <img id="boo" src="images/boo.png" alt="boo" onmouseover="ShybooToBoo()" onmouseout="BooToShyboo()" width="64"
+            height="64">
     </div>
     <hr>
     <div id="puzzle" style="display: inline;">
-        <div class="gamemenu" style="display: inline;">
+        <div style="display: inline;">
             <p align="center">
-                <button class="restart" onclick="start()">New</button>
-                <button class="restart" onclick="restart(g)">Restart</button>
+                <button class="gamemenu" onclick="new_game(g)">New</button>
+                <button class="gamemenu" onclick="restart(g)">Restart</button>
                 <button class="gamemenu" onclick="undo(g)">Undo</button>
                 <button class="gamemenu" onclick="redo(g)">Redo</button>
                 <button class="gamemenu" onclick="solve(g)">Solve</button>
@@ -31,40 +33,36 @@
                 <button onload="start()">JEU</button>
 
             </canvas>
-            <!-- <div id="resizable" style="position: relative; left: 0px; top: 0px; width: 295px;">
-
-                <div id="statusbarholder" style="display: block">
-                </div>
-                <canvas style="position: absolute; z-index: 98; bottom: 0px; right: 0px; cursor: se-resize" 
-                    title="Drag to resize the puzzle. Right-click to restore the default size." width="10" height="10"></canvas> 
-            </div> -->
         </div>
     </div>
 
     <hr>
     <div>
-        <p>
-            Place light bulbs in the grid so as to light up all the blank squares. A light illuminates its own square
-            and all the squares in
-            the same row or column unless blocked by walls (black squares). Lights may not illuminate each other. Each
-            numbered square must be
-            orthogonally adjacent to exactly the given number of lights.
+        <p class="help">
+            <b><u>Goal :</u></b><br>
+            Place Boos and cover the whole grid with mist.<br>
+            Blocks may require some Boos to be adjacent to them. Look for the numbers.<br>
+            Watch out ! Boos are shy and cannot face each other.<br>
+            If you find that a case cannot contain a Boo, you can place a Luigi. Where Luigi goes, Boos stay hidden
+            !<br>
         </p>
-        <p>
-            Click on a square to place or remove a light. Right-click to place a dot indicating that you think there is
-            no light in that square.
+        <img id="luigi" src="images/luigi.png" alt="luigi" width="64" height="64">
+        <p class="help">
+            <b><u>Commands :</u></b><br>
+            Left click to place/remove a Boo<br>
+            Right click to place/remove a Luigi<br>
         </p>
 
     </div>
     <hr>
-    (comments to <a href="loic.richard@etu.u-bordeaux.fr">richard@etu.u-bordeaux.fr</a>)
-    <br>
-    (Last modified on
-    <!--LASTMOD-->
-    Thur Apr 28
-    <!--END-->)
-    <br>
-    <em>Loïc Maxime Renaud , 2022.</em>
+    <p id="credits">
+        <i>@ <a href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/lightup.html">Light Up</a>, from Simon
+            Tatham </i><br>
+        <em>Remake by Loïc Richard , Maxime Audrain , Renaud Machecourt-Bourgeois </em><br>
+        (Last modified on
+        <!--LASTMOD-->Thur May 01 2022
+        <!--END-->)<br>
+    </p>
 
     <script src="game.js"></script>
     <script src="demo.js"> </script>

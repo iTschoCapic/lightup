@@ -3,53 +3,50 @@ html {
     color: white;
 }
 
-.show {
-    color: darkturquoise;
-    font-family: serif;
-    font-weight: bold;
-    background: white;
-}
-
-#lien {
-    color: red;
-    font-family: monospace;
-    font-weight: bold;
-    font-size: 20px;
-
+h1 {
+    margin: auto;
+    padding: auto;
 }
 
 .header {
-    padding: 10px;
     font-family: mistral;
     text-align: center;
     font-weight: bold;
     font-size: xx-large;
 }
 
-.footer {
-    background-color: #f1f1f1;
-    padding: 10px;
-    text-align: center;
-}
-
 .gamemenu {
     height: 40px;
-    width: 60px;
+    width: 80px;
+    color: white;
+    font-family: mistral;
     font-weight: bold;
-    font-size: medium;
+    font-size: large;
     margin-top: 0;
     margin-bottom: 0;
-    text-align: center
+    text-align: center;
+    background-image: url(images/wood.png);
+    background-size: 80px 40px;
 }
 
-.restart {
-    height: 40px;
-    width: 80px;
-    font-weight: bold;
-    font-size: medium;
-    margin-top: 0;
-    margin-bottom: 0;
-    text-align: center
+.help {
+    margin: auto;
+    padding: auto;
+    text-align: center;
+    font-family: mistral;
+    font-size: x-large;
+}
+
+#luigi {
+    display: block;
+    margin: auto;
+    padding: auto;
+}
+
+#credits {
+    text-align: right;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: small;
 }
 
 canvas {
