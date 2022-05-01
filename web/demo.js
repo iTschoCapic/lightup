@@ -215,6 +215,9 @@ function printGame(g) {
                 ctx.drawImage(shyboo, row * ecart, col * ecart, ecart, ecart);
             } else if (marked && !error) {
                 ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
+                if (ligthed) {
+                    ctx.drawImage(mist, row * ecart, col * ecart, ecart, ecart);
+                }
                 ctx.drawImage(luigi, row * ecart, col * ecart, ecart, ecart);
             } else if (ligthed && !error) {
                 ctx.clearRect(row * ecart, col * ecart, ecart, ecart);
