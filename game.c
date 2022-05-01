@@ -693,7 +693,7 @@ bool game_is_over(cgame g)
             {
                 return false;
             }
-            if ((game_is_blank(g, i, j) || game_is_lightbulb(g, i, j)) && !game_is_lighted(g, i, j))
+            if ((game_is_blank(g, i, j) || game_is_marked(g, i, j)) && !game_is_lighted(g, i, j))
             {
                 return false;
             }
