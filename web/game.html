@@ -12,6 +12,10 @@
 </head>
 
 <body>
+    <audio id="music" loop>
+        <source src="images/Ghost_House_Super_Mario_3D_Land.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     <div class="header">
         <h1>Don't be Shy !</h1>
         <img id="boo" src="images/boo.png" alt="boo" onmouseover="ShybooToBoo()" onmouseout="BooToShyboo()" width="64"
@@ -56,11 +60,12 @@
     </div>
     <hr>
     <p id="credits">
+        <img id="toggleMusic" src="images/sound.png" onclick="toggleSound()" width="64" height="64">
         <i>@ <a href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/js/lightup.html">Light Up</a>, from Simon
             Tatham </i><br>
         <em>Remake by Loïc Richard , Maxime Audrain , Renaud Machecourt-Bourgeois </em><br>
         (Last modified on
-        <!--LASTMOD-->Thur May 01 2022
+        <!--LASTMOD-->Tue May 03 2022
         <!--END-->)<br>
     </p>
 

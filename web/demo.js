@@ -153,7 +153,6 @@ function printGame(g) {
     var nb_cols = Module._nb_cols(g);
     ecart = elm.height / nb_rows;
     var ecart2 = ecart * 0.9;
-    var ecart3 = (ecart - ecart2) / 2;
     drawgrid()
     for (var row = 0; row < nb_rows; row++) {
         for (var col = 0; col < nb_cols; col++) {
@@ -239,8 +238,33 @@ function BooToShyboo() {
     elt.src = "images/boo.png";
 }
 
+function initMusic() {
+    var music = document.getElementById("music");
+    music.volume = 0.2;
+    music.play();
+    if (music.paused) {
+        var elt = document.getElementById("toggleMusic");
+        elt.src = "images/mute.png";
+    }
+}
+
+function toggleSound() {
+    var music = document.getElementById("music");
+    var elt = document.getElementById("toggleMusic");
+    if (music.paused) {
+        music.play();
+        elt.src = "images/sound.png";
+    } else {
+        music.pause();
+        elt.src = "images/mute.png";
+    }
+}
+
+
 function start() {
     console.log("call start routine");
     g = Module._new_random(7, 7, 0, 10, false);
     printGame(g);
+    initMusic();
 }
+
