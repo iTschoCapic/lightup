@@ -13,9 +13,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@4.1.3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
+          node-version: '14'
+
+      - name: Build and deploy
+        run: |
+          npm install
+          npm run build
+          mkdir -p ${{ github.workspace }}/docs
+          cp -r lightup/web/* ${{ github.workspace }}/docs
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: lightup/web
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
