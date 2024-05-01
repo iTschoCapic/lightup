@@ -18,7 +18,7 @@ jobs:
       - name: Copy website files
         run: |
           mkdir -p docs
-          cp -r lightup/web/* docs/
+          cp -r /web/* docs/
 
       - name: Commit and push changes
         run: |
