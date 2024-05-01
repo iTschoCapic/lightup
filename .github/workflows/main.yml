@@ -10,18 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Install dependencies and deploy
+      - name: Set up Git
         run: |
-          npm install
-          mkdir -p docs
-          cp -r lightup/web/* docs/
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
+
+      - name: Copy website files
+        run: |
+          mkdir -p docs
+          cp -r lightup/web/* docs/
+
+      - name: Commit and push changes
+        run: |
+          cd docs
+          git init
           git add .
           git commit -m "Deploying website"
-          git push origin main:gh-pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push --force "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" main:gh-pages
